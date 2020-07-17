@@ -1,0 +1,6 @@
+D:\repos\git\SpeedRace\.mono\temp\bin\Tools\Speed Race.dll
+D:\repos\git\SpeedRace\.mono\temp\bin\Tools\Speed Race.pdb
+D:\repos\git\SpeedRace\.mono\temp\obj\Tools\Speed Race.csprojAssemblyReference.cache
+D:\repos\git\SpeedRace\.mono\temp\obj\Tools\Speed Race.csproj.CoreCompileInputs.cache
+D:\repos\git\SpeedRace\.mono\temp\obj\Tools\Speed Race.dll
+D:\repos\git\SpeedRace\.mono\temp\obj\Tools\Speed Race.pdb
