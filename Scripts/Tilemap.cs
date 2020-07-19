@@ -6,14 +6,17 @@ public class Tilemap : Node2D
     // Declare member variables here. Examples:
     // private int a = 2;
     // private string b = "text";
+    [Export]
+    public int scrollSpeed = 4;
     private int _screenH;
     private int _screenW;
     private int _tileSize = 64;
     TileMap tm;
+    Camera2D cam;
 
     int[][] tileRows = {
         new int[] { 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2 },
-        new int[] { 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2 },
+        new int[] { 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1, 1 },
     };
 
     int[] map = {
@@ -154,6 +157,7 @@ public class Tilemap : Node2D
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     };
 
+    uint mapstartTime;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -164,7 +168,10 @@ public class Tilemap : Node2D
         SetTiles();
         var timenow = OS.GetTicksMsec();
         var elapsed = timenow - timestart;
+        cam = (Camera2D)GetNode("Camera2D");
+        cam.Position = new Vector2(_screenW / 2, map.Length * _tileSize - _screenH / 2);
         GD.Print("elapsed: " + elapsed + " Mapheight: " + (map.Length * 64));
+        mapstartTime = OS.GetTicksMsec();
     }
 
     public void SetTiles()
@@ -180,9 +187,13 @@ public class Tilemap : Node2D
         }
     }
 
-    //  // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
-
+        cam.Position += new Vector2(0, -scrollSpeed);
+        if (cam.Position.y < _screenH / 2)
+        {
+            var elapsed = OS.GetTicksMsec() - mapstartTime;
+            GD.Print("Time to end: " + elapsed / 100);
+        }
     }
 }
