@@ -168,7 +168,7 @@ public class Tilemap : Node2D
         SetTiles();
         var timenow = OS.GetTicksMsec();
         var elapsed = timenow - timestart;
-        cam = (Camera2D)GetNode("Camera2D");
+        cam = (Camera2D)GetNode("BaseCar/Camera2D");
         cam.Position = new Vector2(_screenW / 2, map.Length * _tileSize - _screenH / 2);
         GD.Print("elapsed: " + elapsed + " Mapheight: " + (map.Length * 64));
         mapstartTime = OS.GetTicksMsec();
@@ -189,11 +189,11 @@ public class Tilemap : Node2D
 
     public override void _Process(float delta)
     {
-        cam.Position += new Vector2(0, -scrollSpeed);
-        if (cam.Position.y < _screenH / 2)
-        {
-            var elapsed = OS.GetTicksMsec() - mapstartTime;
-            GD.Print("Time to end: " + elapsed / 100);
-        }
+        //cam.Position += new Vector2(0, -scrollSpeed);
+        //if (cam.Position.y < _screenH / 2)
+        //{
+        //    var elapsed = OS.GetTicksMsec() - mapstartTime;
+        //    GD.Print("Time to end: " + elapsed / 100);
+        //}
     }
 }
