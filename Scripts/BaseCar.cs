@@ -31,7 +31,7 @@ public class BaseCar : KinematicBody2D
         SideSpeed = 0;
         if (Input.IsActionPressed("ui_up"))
         {
-            _speed = -200;
+            _speed = -350;
             /*_speed -= Acceleration;
             if (_speed < MaxSpeed)
             {
@@ -56,7 +56,7 @@ public class BaseCar : KinematicBody2D
 
         if (Input.IsActionPressed("ui_down"))
         {
-            _speed = 200;
+            _speed = 350;
             /*_speed += Acceleration;
             if (_speed > -MaxSpeed)
             {

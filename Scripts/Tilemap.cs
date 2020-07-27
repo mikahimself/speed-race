@@ -41,18 +41,18 @@ public class Tilemap : Node2D
         }
     }
 
-    async public void SetTileParts(int part, int height)
+    public void SetTileParts(int part, int height)
     {
-        //GD.Print("Part: " + part);
-        //GD.Print("Arraylen: " +  TileMapParts.mapParts[part].Length);
+        GD.Print("Part: " + part);
+        GD.Print("Arraylen: " +  TileMapParts.mapParts[part].Length);
         for (int i = 0; i < TileMapParts.mapParts[part].Length; i++)
         {
-            //GD.Print("InnerArraylen: " +  TileMapParts.mapParts[part][i].Length);
+            GD.Print("InnerArraylen: " +  TileMapParts.mapParts[part][i].Length);
             for (int j = 0; j < TileMapParts.mapParts[part][i].Length; j++)
             {
                 tm.SetCell(j, i + (10 * height), TileMapParts.mapParts[part][i][j]);
-                GD.Print("Part: " + part + " I: " +i);
-                await ToSignal(GetTree().CreateTimer(0.01f), "timeout");
+                //GD.Print("Part: " + part + " I: " +i);
+                //await ToSignal(GetTree().CreateTimer(0.01f), "timeout");
             }
                 
                 

@@ -431,6 +431,7 @@ script = ExtResource( 2 )
 scrollSpeed = 2
 
 [node name="TileMap" type="TileMap" parent="."]
+position = Vector2( 0, -1 )
 scale = Vector2( 4, 4 )
 tile_set = SubResource( 1 )
 cell_size = Vector2( 16, 16 )
