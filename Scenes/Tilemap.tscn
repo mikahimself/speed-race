@@ -435,9 +435,6 @@ scale = Vector2( 4, 4 )
 tile_set = SubResource( 1 )
 cell_size = Vector2( 16, 16 )
 format = 1
-tile_data = PoolIntArray( 2883768, 0, 0 )
+tile_data = PoolIntArray( 655434, 0, 0, 2883768, 0, 0 )
 
 [node name="BaseCar" parent="." instance=ExtResource( 3 )]
-
-[node name="Camera2D" type="Camera2D" parent="BaseCar"]
-current = true
