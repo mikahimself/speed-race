@@ -4,6 +4,18 @@ using System.Collections.Generic;
 
 public class TileMapParts : TileMap
 {
+    public static int[][] widestStraight = {
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1 },
+    };
     public static int[][] wideStraight = {
         new int[] { 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1, 1 },
@@ -43,13 +55,15 @@ public class TileMapParts : TileMap
         new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
     };
 
+
+    public static int[][] widestToWide = {
+        new int[] { 1, 1, 1, 14, 15, 0, 0, 0, 0, 0, 0, 16, 17, 1, 1, 1 },
+        new int[] { 1, 1, 1, 22,  0, 0, 0, 0, 0, 0, 0,  0, 23, 1, 1, 1 },
+        new int[] { 1, 1, 1, 26, 0, 0, 0, 0, 0, 0, 0,  0, 27, 1, 1, 1 },
+        new int[] { 1, 1, 1, 10, 0, 0, 0, 0, 0, 0, 0,  0, 11, 1, 1, 1 },
+    };
+
     public static int[][] wideToNarrow = {
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 14, 15, 0, 0, 0, 0, 16, 17, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 22,  0, 0, 0, 0, 0,  0, 23, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 26,  0, 0, 0, 0, 0,  0, 27, 1, 1, 1, 1 },
@@ -57,12 +71,6 @@ public class TileMapParts : TileMap
     };
 
     public static int[][] narrowToNarrowest = {
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1,  1, 14, 15, 0, 0, 16, 17,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1,  1, 22,  0, 0, 0,  0, 23,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1,  1, 26,  0, 0, 0,  0, 27,  1, 1, 1, 1, 1 },
@@ -70,8 +78,6 @@ public class TileMapParts : TileMap
     };
 
     public static int[][] wideToNarrowest = {
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  1,  2, 0, 0,  9,  1,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1,  1, 14, 15, 0, 0, 16, 17,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1,  1, 22,  0, 0, 0,  0, 23,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1,  1, 26,  0, 0, 0,  0, 27,  1, 1, 1, 1, 1 },
@@ -83,64 +89,109 @@ public class TileMapParts : TileMap
     };
 
     public static int[][] narrowToWide = {
-        new int[] { 1, 1, 1, 1,  2,  0, 0, 0, 0, 0,  0,  9, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 25,  0, 0, 0, 0, 0,  0, 24, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 29,  0, 0, 0, 0, 0,  0, 28, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 13,  0, 0, 0, 0, 0,  0, 12, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 20, 21, 0, 0, 0, 0, 18, 19, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
     };
 
     public static int[][] narrowestToNarrow = {
-        new int[] { 1, 1, 1, 1,  1,  2, 0, 0, 0, 0,  9,  1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 25,  0, 0, 0,  0, 24, 1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 29,  0, 0, 0,  0, 28, 1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 13,  0, 0, 0,  0, 12, 1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 20, 21, 0, 0, 18, 19, 1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
     };
 
     public static int[][] narrowestToWide = {
-        new int[] { 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 25,  0, 0, 0, 0, 0,  0, 24, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 29,  0, 0, 0, 0, 0,  0, 28, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 13,  0, 0, 0, 0, 0,  0, 12, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 20, 21, 0, 0, 0, 0, 18, 19, 1, 1, 1, 1 },
-
         new int[] { 1, 1, 1, 1, 1, 25,  0, 0, 0,  0, 24, 1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 29,  0, 0, 0,  0, 28, 1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 13,  0, 0, 0,  0, 12, 1, 1, 1, 1, 1 },
         new int[] { 1, 1, 1, 1, 1, 20, 21, 0, 0, 18, 19, 1, 1, 1, 1, 1 },
-        new int[] { 1, 1, 1, 1, 1, 1, 2, 0, 0, 9, 1, 1, 1, 1, 1, 1 },
-        
     };
     
+        public static int[][] narrowestToWidest = {
+        new int[] { 1, 1, 1, 25,  0, 0, 0, 0, 0, 0, 0,  0, 24, 1, 1, 1 },
+        new int[] { 1, 1, 1, 29,  0, 0, 0, 0, 0, 0, 0,  0, 28, 1, 1, 1 },
+        new int[] { 1, 1, 1, 13,  0, 0, 0, 0, 0, 0, 0,  0, 12, 1, 1, 1 },
+        new int[] { 1, 1, 1, 20, 21, 0, 0, 0, 0, 0, 0, 18, 19, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 25,  0, 0, 0, 0, 0,  0, 24, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 29,  0, 0, 0, 0, 0,  0, 28, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 13,  0, 0, 0, 0, 0,  0, 12, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 20, 21, 0, 0, 0, 0, 18, 19, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 1, 25,  0, 0, 0,  0, 24, 1, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 1, 29,  0, 0, 0,  0, 28, 1, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 1, 13,  0, 0, 0,  0, 12, 1, 1, 1, 1, 1 },
+        new int[] { 1, 1, 1, 1, 1, 20, 21, 0, 0, 18, 19, 1, 1, 1, 1, 1 },
+    };
+
+    public static int[][] twoLaneStart = {
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 30, 31, 0, 0, 0, 9, 1, 1, 1 },
+    };
+
+    public static int[][] twoLaneStraight = {        
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+    };
+
+    public static int[][] twoLaneEnd = {
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 34, 35, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+        new int[] { 1, 1, 1, 2, 0, 0, 0, 32, 33, 0, 0, 0, 9, 1, 1, 1 },
+    };
 
 
-    public static List<int[][]> mapParts = new List<int[][]> { wideStraight, narrowStraight, narrowestStraight, wideToNarrow, wideToNarrowest, narrowToNarrowest, narrowToWide, narrowestToNarrow, narrowestToWide };
+
+    public static List<int[][]> mapParts = new List<int[][]> 
+    { 
+        widestStraight, 
+        wideStraight,
+        narrowStraight,
+        narrowestStraight,
+        widestToWide,
+        wideToNarrow,
+        narrowToNarrowest,
+        wideToNarrowest,
+        narrowToWide,
+        narrowestToNarrow,
+        narrowestToWide,
+        narrowestToWidest,
+        twoLaneStart,
+        twoLaneStraight,
+        twoLaneEnd
+    };
 
     /*
-        0 - Wide
-        1 - Narrow
-        2 - Narrowest
-        3 - Wide to Narrow
-        4 - Wide to Narrowest
-        5 - Narrow to Narrowest
-        6 - Narrow to Wide
-        7 - Narrowest to Narrow
-        8 - Narrowest to Wide
+        0 - Widest
+        1 - Wide
+        2 - Narrow
+        3 - Narrowest
+        4 - Widest to Wide
+        5 - Wide to Narrow
+        6 - Wide to Narrowest
+        7 - Narrow to Narrowest
+        8 - Narrow to Wide
+        9 - Narrowest to Narrow
+       10 - Narrowest to Wide
     */
 
     public static int[] track = {
-        8, 2, 4, 0, 6, 7, 2, 2, 5, 1, 1, 3, 0, 0
+        8, 2, 4, 0, 6, 7, 2, 2, 5, 1, 1, 4, 0, 0, 11, 3, 0, 14, 13,12 ,0
     };
 
     public override void _Ready()

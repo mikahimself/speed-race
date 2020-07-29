@@ -15,6 +15,8 @@ public class Tilemap : Node2D
     Camera2D cam;
     KinematicBody2D car;
     
+    int currentHeight = 0;
+
     uint mapstartTime;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -28,7 +30,7 @@ public class Tilemap : Node2D
         var elapsed = timenow - timestart;
         cam = (Camera2D)GetNode("BaseCar/Camera2D");
         car = (KinematicBody2D)GetNode("BaseCar");
-        car.Position = new Vector2(_screenW / 2, 3 * 10 * (_tileSize / 4));
+        car.Position = new Vector2(_screenW / 2, currentHeight * _tileSize - _screenH / 2);
         GD.Print("elapsed: " + elapsed);
         mapstartTime = OS.GetTicksMsec();
     }
@@ -43,20 +45,14 @@ public class Tilemap : Node2D
 
     public void SetTileParts(int part, int height)
     {
-        GD.Print("Part: " + part);
-        GD.Print("Arraylen: " +  TileMapParts.mapParts[part].Length);
         for (int i = 0; i < TileMapParts.mapParts[part].Length; i++)
         {
-            GD.Print("InnerArraylen: " +  TileMapParts.mapParts[part][i].Length);
             for (int j = 0; j < TileMapParts.mapParts[part][i].Length; j++)
             {
-                tm.SetCell(j, i + (10 * height), TileMapParts.mapParts[part][i][j]);
-                //GD.Print("Part: " + part + " I: " +i);
-                //await ToSignal(GetTree().CreateTimer(0.01f), "timeout");
+                tm.SetCell(j, i + currentHeight, TileMapParts.mapParts[part][i][j]);
             }
-                
-                
         }
+        currentHeight += TileMapParts.mapParts[part].Length;
     }
 
     public override void _Process(float delta)
