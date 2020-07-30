@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Scripts/BaseCar.cs" type="Script" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
+[ext_resource path="res://Graphics/PlayerCar.png" type="Texture" id=2]
 
 [sub_resource type="CapsuleShape2D" id=1]
 
@@ -12,10 +12,16 @@ script = ExtResource( 1 )
 shape = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
+scale = Vector2( 2, 2 )
 z_index = 100
 texture = ExtResource( 2 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2( 0, -550 )
+anchor_mode = 0
 current = true
 limit_left = 0
 limit_right = 1024
+smoothing_enabled = true
+smoothing_speed = 2.5
+drag_margin_bottom = 0.1
