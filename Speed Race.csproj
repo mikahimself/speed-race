@@ -57,6 +57,7 @@
     <Compile Include="Scripts\BaseCar.cs" />
     <Compile Include="Scripts\Tilemap.cs" />
     <Compile Include="Scripts\TileMapParts.cs" />
+    <Compile Include="Scripts\TilemapToArray.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

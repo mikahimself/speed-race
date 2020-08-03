@@ -21,17 +21,18 @@ public class TilemapToArray : Node2D
     if (Input.IsActionPressed("ui_accept") && !readout)
     {
         readout = true;
-        var xline = "";
-        for (int y = 0; y < 15; y++)
+        var xline = "new int[] {";
+        for (int y = 0; y < 16; y++)
         {
-            for (int x = 0; x < 15; x++)
+            for (int x = 0; x < 16; x++)
             {
                 if (tiles.GetCell(x, y) != -1) {
                     xline += tiles.GetCell(x, y) + ", ";
                 }
             }
+            xline += "},";
             GD.Print(xline);
-            xline = "";
+            xline = "new int[] {";
         }
     }    
   }
