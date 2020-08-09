@@ -17,3 +17,4 @@ format = 1
 tile_data = PoolIntArray( 655434, 0, 0, 2883768, 0, 0 )
 
 [node name="BaseCar" parent="." instance=ExtResource( 3 )]
+MaxSpeed = -600.0
