@@ -2,7 +2,7 @@
 
 [ext_resource path="res://Tilemap/TrackTilemap.tres" type="TileSet" id=1]
 [ext_resource path="res://Scripts/Tilemap.cs" type="Script" id=2]
-[ext_resource path="res://Scenes/BaseCar.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/PlayerCar.tscn" type="PackedScene" id=3]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource( 2 )
@@ -14,7 +14,6 @@ scale = Vector2( 4, 4 )
 tile_set = ExtResource( 1 )
 cell_size = Vector2( 16, 16 )
 format = 1
-tile_data = PoolIntArray( 655434, 0, 0, 2883768, 0, 0 )
+tile_data = PoolIntArray( 2883768, 0, 0 )
 
-[node name="BaseCar" parent="." instance=ExtResource( 3 )]
-MaxSpeed = -600.0
+[node name="PlayerCar" parent="." instance=ExtResource( 3 )]

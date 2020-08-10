@@ -28,8 +28,9 @@ public class Tilemap : Node2D
         SetTiles();
         var timenow = OS.GetTicksMsec();
         var elapsed = timenow - timestart;
-        cam = (Camera2D)GetNode("BaseCar/Camera2D");
-        car = (KinematicBody2D)GetNode("BaseCar");
+        cam = (Camera2D)GetNode("PlayerCar/Camera2D");
+        cam.EditorDrawDragMargin = true;
+        car = (KinematicBody2D)GetNode("PlayerCar");
         car.Position = new Vector2(_screenW / 2, currentHeight * _tileSize - _screenH / 2);
         GD.Print("elapsed: " + elapsed);
         mapstartTime = OS.GetTicksMsec();
