@@ -7,7 +7,8 @@ public class BaseCar : KinematicBody2D
     public float MaxSpeed = -650.0f;
     [Export]
     public float Acceleration = 4.0f;
-    public float Deceleration = 10.0f;
+    public float Deceleration = 6.0f;
+    public float BrakeDeceleration = 15.0f;
     public float SideSpeed = 4.0f;
     public float MaxSideSpeed = 150f;
     protected float _speed = 0.0f;
@@ -23,6 +24,10 @@ public class BaseCar : KinematicBody2D
     };
 
     protected TileMap map;
+    public override void _Ready()
+    {
+        map = (TileMap)GetParent().GetNode("TileMap");
+    }
 
     public virtual void GetControls(float delta)
     {}

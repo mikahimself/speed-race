@@ -3,15 +3,6 @@ using System;
 
 public class PlayerCar : BaseCar
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
-    {
-        map = (TileMap)GetParent().GetNode("TileMap");
-    }
 
     public override void GetControls(float delta)
     {
@@ -24,15 +15,17 @@ public class PlayerCar : BaseCar
                 _speed = MaxSpeed;
             }
         }
+        var speedFromMax = (_speed / MaxSpeed) * 2 < 0.5f ? (_speed / MaxSpeed) * 2 : _speed / MaxSpeed;
+
         if (Input.IsActionPressed("ui_left"))
         {
-            SideSpeed = -MaxSideSpeed;
+            SideSpeed = -MaxSideSpeed * speedFromMax;
         }
         if (Input.IsActionPressed("ui_right"))
         {
-            SideSpeed = MaxSideSpeed;
+            SideSpeed = MaxSideSpeed * speedFromMax;
         }
-        var pos = (map.WorldToMap(GlobalPosition + new Vector2(0, 0)) / 4);
+        var pos = (map.WorldToMap(GlobalPosition) / 4);
         var mapid = map.GetCellv(pos);
         if (_CheckOffroadTile(mapid))
         {
@@ -42,20 +35,20 @@ public class PlayerCar : BaseCar
 
         if (Input.IsActionPressed("ui_down"))
         {
-            _speed += Acceleration;
-            if (_speed > -MaxSpeed)
+            _speed += BrakeDeceleration;
+            if (_speed >= 0)
             {
-                _speed = -MaxSpeed;
+                _speed = 0;
             }
         }
 
         if (!Input.IsActionPressed("ui_down") && !Input.IsActionPressed("ui_up"))
         {
-            if (_speed < -5)
+            if (_speed < 0)
             {
                 _speed += Deceleration;
             }
-            else if (_speed > 5)
+            else if (_speed > 0)
             {
                 _speed -= Deceleration;
             }
@@ -64,9 +57,5 @@ public class PlayerCar : BaseCar
                 _speed = 0;
             }
         }
-        //GD.Print(_speed);
     }
-
-    
-
 }

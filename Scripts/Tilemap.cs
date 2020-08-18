@@ -14,6 +14,7 @@ public class Tilemap : Node2D
     TileMap tm;
     Camera2D cam;
     KinematicBody2D car;
+    KinematicBody2D aicar;
     
     int currentHeight = 0;
 
@@ -31,7 +32,9 @@ public class Tilemap : Node2D
         cam = (Camera2D)GetNode("PlayerCar/Camera2D");
         cam.EditorDrawDragMargin = true;
         car = (KinematicBody2D)GetNode("PlayerCar");
+        aicar = (KinematicBody2D)GetNode("AICar");
         car.Position = new Vector2(_screenW / 2, currentHeight * _tileSize - _screenH / 2);
+        aicar.Position = new Vector2(_screenW / 2 - 200, currentHeight * _tileSize - _screenH / 2);
         GD.Print("elapsed: " + elapsed);
         mapstartTime = OS.GetTicksMsec();
     }
