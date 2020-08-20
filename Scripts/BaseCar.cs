@@ -45,7 +45,7 @@ public class BaseCar : KinematicBody2D
         {
             if (offTrackTiles[i] == tileID)
             {
-                GD.Print("Offtrack tile: " + tileID);
+                //GD.Print("Offtrack tile: " + tileID);
                 return true;
             }
         }

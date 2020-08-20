@@ -34,7 +34,7 @@ public class Tilemap : Node2D
         car = (KinematicBody2D)GetNode("PlayerCar");
         aicar = (KinematicBody2D)GetNode("AICar");
         car.Position = new Vector2(_screenW / 2, currentHeight * _tileSize - _screenH / 2);
-        aicar.Position = new Vector2(_screenW / 2 - 200, currentHeight * _tileSize - _screenH / 2);
+        aicar.Position = new Vector2(_screenW / 2 + 200, currentHeight * _tileSize - _screenH / 2);
         GD.Print("elapsed: " + elapsed);
         mapstartTime = OS.GetTicksMsec();
     }

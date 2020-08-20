@@ -57,36 +57,45 @@ public class AICar : BaseCar
     {
         SideSpeed = MaxSideSpeed * direction;
         _speed = MaxSpeed + 400;
-        ScanForward();
+        SetTurnDirection();
+    }
+
+    private int ScanSide(int direction)
+    {
+        int sidePoints = 0;
+
+        for (int i = 1; i <= 10; i++)
+        {
+            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(i * (32 * direction), 0)) / 4);
+            var spId = map.GetCellv(sidePoint);
+            if (!_CheckOffroadTile(spId))
+            {
+                sidePoints++;
+            }
+        }
+        return sidePoints;
     }
 
     private void SetTurnDirection()
     {
         // Check left
-        var leftPoints = 0;
-        var rightPoints = 0;
-        for (int i = 1; i <= 5; i++)
+        var leftPoints = ScanSide(-1);
+        var rightPoints = ScanSide(1);
+
+        GD.Print("leftpoints: " + leftPoints);
+        GD.Print("rightpoints: " + rightPoints);
+
+        if (leftPoints > rightPoints)
         {
-            var lp = (map.WorldToMap(GlobalPosition + new Vector2(i * -64, 0)) / 4);
-            var rp = (map.WorldToMap(GlobalPosition + new Vector2(i *  64, 0)) / 4);
-            var lpId = map.GetCellv(lp);
-            var rpId = map.GetCellv(rp);
-            if (_CheckOffroadTile(lpId))
-            {
-                leftPoints++;
-            }
-            if (_CheckOffroadTile(rpId))
-            {
-                rightPoints++;
-            }
-            if (leftPoints < rightPoints)
-            {
-                AiDirection = Direction.LEFT;
-            }
-            else
-            {
-                AiDirection = Direction.RIGHT;
-            }
+            AiDirection = Direction.LEFT;
+        }
+        else if (rightPoints > leftPoints)
+        {
+            AiDirection = Direction.RIGHT;
+        }
+        else
+        {
+            ScanForward();
         }
     }
 }
