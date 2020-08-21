@@ -5,3 +5,6 @@
 
 [node name="AICar" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
+
+[node name="Line2D" type="Line2D" parent="." index="3"]
+default_color = Color( 0.4, 0.501961, 1, 1 )

@@ -15,8 +15,8 @@ public class BaseCar : KinematicBody2D
     
     protected Vector2 _velocity;
     protected int[] offTrackTiles = {
-        3, 4, 5, 6, 7, 8, 9, 10, 17, 18, 20, 21, 22, 24, 29, 31, 34, 38, 39, 43, 44, 47,
-        50, 53, 56, 59, 62, 65, 74, 75, 82, 83
+        3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 20, 21, 22, 24, 26, 27, 29, 31, 32, 34, 38, 39, 43, 44, 47,
+        50, 53, 56, 59, 62, 65, 72, 73, 74, 75, 80, 81, 82, 83
     };
 
     protected int[] sidelineTiles = {
