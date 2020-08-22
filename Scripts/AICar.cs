@@ -9,13 +9,42 @@ public class AICar : BaseCar
         RIGHT
     }
 
+    public struct DiagonalData {
+        /*Vector2 rightHit;
+        Vector2 leftHit;
+        int rightPoints;
+        int leftPoints;*/
+        public DiagonalData(Vector2 rh, Vector2 lh, int rp, int lp)
+        {
+            rightHit = rh;
+            leftHit = lh;
+            rightPoints = rp;
+            leftPoints = lp;
+        }
+        public Vector2 rightHit { get; }
+        public Vector2 leftHit { get; }
+        public int rightPoints { get; }
+        public int leftPoints { get; }
+
+        public override string ToString() => $"RightHit: {rightHit.x}, {rightHit.y} ";
+    }
+
     [Export]
     public Line2D line;
     public Direction AiDirection = Direction.FORWARD;
+    public Line2D lineR;
+    public Line2D lineL;
 
     public override void _Ready()
     {
         base._Ready();
+        lineR = new Line2D();
+        lineL = new Line2D();
+        lineR.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(160, -160) };
+        lineL.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(-160, -160) };
+        AddChild(lineR);
+        AddChild(lineL);
+
         line = (Line2D)GetNode("Line2D");
         line.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(0, -320)};
     }
@@ -44,9 +73,19 @@ public class AICar : BaseCar
         SideSpeed = 0;
         var forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
         var forwardPosId = map.GetCellv(forwardPos);
+        DiagonalData dd = ScanDiagonals();
+        lineR.ClearPoints();
+        lineR.AddPoint(new Vector2(0, 0), 0);
+        lineR.AddPoint(new Vector2(dd.rightHit.x, dd.rightHit.y), 1);
+        lineR.DefaultColor = dd.rightPoints < 5 ? new Color(1, 0, 0, 1) : new Color(0, 0, 1, 1);
+        
+        lineL.ClearPoints();
+        lineL.AddPoint(new Vector2(0, 0), 0);
+        lineL.AddPoint(new Vector2(dd.leftHit.x, dd.leftHit.y), 1);
+        lineL.DefaultColor = dd.leftPoints < 5 ? new Color(1, 0, 0, 1) : new Color(0, 0, 1, 1);
+        
         if (_CheckOffroadTile(forwardPosId))
         {
-            line.DefaultColor = new Color(1, 0, 0, 1);
             SetTurnDirection();
             return;
         }
@@ -65,7 +104,6 @@ public class AICar : BaseCar
         if (!_CheckOffroadTile(forwardPosId))
         {
             AiDirection = Direction.FORWARD;
-            GD.Print("Go forward");
         }
         
     }
@@ -92,6 +130,46 @@ public class AICar : BaseCar
         }
   
 //        ScanForward();
+    }
+
+    private DiagonalData ScanDiagonals()
+    {
+        var leftPoints = 0;
+        var rightPoints = 0;
+        bool lc = false;
+        bool rc = false;
+        var leftCutoff = new Vector2(-5 * 32, -5 * 32);
+        var rightCutoff = new Vector2(5 * 32, -5 * 32);
+
+        for (int i = -5; i <= 5; i++)
+        {
+            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(i * 32, -(i * 32))) / 4);
+            var spId = map.GetCellv(sidePoint);
+            if (!_CheckOffroadTile(spId))
+            {
+                if (i < 0) {
+                    leftPoints++;
+                }
+                else if (i > 0)
+                {
+                    rightPoints++;
+                }
+            }
+            else
+            {
+                if (i < 0 && !lc) {
+                    leftCutoff = new Vector2((i + 1) * 32, (i + 1) * 32);
+                    lc = true;
+                }
+                else if (i > 0 && !rc)
+                {
+                    rightCutoff = new Vector2((i - 1) * 32, -((i - 1) * 32));
+                    rc = true;
+                }
+            }
+        }
+
+        return new DiagonalData(rightCutoff, leftCutoff, rightPoints, leftPoints);
     }
 
     private int ScanSide(int direction)
