@@ -8,6 +8,7 @@ public class AICar : BaseCar
         LEFT,
         RIGHT
     }
+    
 
     public struct DiagonalData {
         /*Vector2 rightHit;
@@ -34,6 +35,11 @@ public class AICar : BaseCar
     public Direction AiDirection = Direction.FORWARD;
     public Line2D lineR;
     public Line2D lineL;
+
+    private Color green = new Color(0, 1, 0, 1);
+    private Color yellow = new Color(1, 1, 0, 1);
+    private Color red = new Color(1, 0, 0, 1);
+    private Color orange = new Color(1, 0.5f, 0, 1);
 
     public override void _Ready()
     {
@@ -73,17 +79,7 @@ public class AICar : BaseCar
         SideSpeed = 0;
         var forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
         var forwardPosId = map.GetCellv(forwardPos);
-        DiagonalData dd = ScanDiagonals();
-        lineR.ClearPoints();
-        lineR.AddPoint(new Vector2(0, 0), 0);
-        lineR.AddPoint(new Vector2(dd.rightHit.x, dd.rightHit.y), 1);
-        lineR.DefaultColor = dd.rightPoints < 5 ? new Color(1, 0, 0, 1) : new Color(0, 0, 1, 1);
-        
-        lineL.ClearPoints();
-        lineL.AddPoint(new Vector2(0, 0), 0);
-        lineL.AddPoint(new Vector2(dd.leftHit.x, dd.leftHit.y), 1);
-        lineL.DefaultColor = dd.leftPoints < 5 ? new Color(1, 0, 0, 1) : new Color(0, 0, 1, 1);
-        
+       
         if (_CheckOffroadTile(forwardPosId))
         {
             SetTurnDirection();
@@ -128,48 +124,80 @@ public class AICar : BaseCar
                 ScanForward();
             }
         }
-  
-//        ScanForward();
     }
 
     private DiagonalData ScanDiagonals()
     {
         var leftPoints = 0;
         var rightPoints = 0;
-        bool lc = false;
-        bool rc = false;
         var leftCutoff = new Vector2(-5 * 32, -5 * 32);
         var rightCutoff = new Vector2(5 * 32, -5 * 32);
+        bool foundOffRoad = false;
 
-        for (int i = -5; i <= 5; i++)
+        while (!foundOffRoad && rightPoints < 15)
         {
-            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(i * 32, -(i * 32))) / 4);
+            rightPoints++;
+            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
             var spId = map.GetCellv(sidePoint);
-            if (!_CheckOffroadTile(spId))
-            {
-                if (i < 0) {
-                    leftPoints++;
-                }
-                else if (i > 0)
-                {
-                    rightPoints++;
-                }
-            }
-            else
-            {
-                if (i < 0 && !lc) {
-                    leftCutoff = new Vector2((i + 1) * 32, (i + 1) * 32);
-                    lc = true;
-                }
-                else if (i > 0 && !rc)
-                {
-                    rightCutoff = new Vector2((i - 1) * 32, -((i - 1) * 32));
-                    rc = true;
-                }
-            }
+            foundOffRoad = _CheckOffroadTile(spId);
+        }
+        rightCutoff = new Vector2((rightPoints - 1) * 32, -((rightPoints - 1) * 32));
+        
+        foundOffRoad = false;
+
+        while (!foundOffRoad && leftPoints > -15)
+        {
+            leftPoints--;
+            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
+            var spId = map.GetCellv(sidePoint);
+            foundOffRoad = _CheckOffroadTile(spId);
+        }
+        leftCutoff = new Vector2((leftPoints + 1) * 32, (leftPoints + 1) * 32);
+        
+        return new DiagonalData(rightCutoff, leftCutoff, rightPoints, leftPoints);
+    }
+
+    public void DrawDiagonals(DiagonalData dd)
+    {
+        lineR.ClearPoints();
+        lineR.AddPoint(new Vector2(0, 0), 0);
+        lineR.AddPoint(new Vector2(dd.rightHit.x, dd.rightHit.y), 1);
+
+        lineL.ClearPoints();
+        lineL.AddPoint(new Vector2(0, 0), 0);
+        lineL.AddPoint(new Vector2(dd.leftHit.x, dd.leftHit.y), 1);
+        
+        switch (dd.rightPoints)
+        {
+            case 3:
+                lineR.DefaultColor = yellow;
+                break;
+            case 2:
+                lineR.DefaultColor = orange;
+                break;
+            case 1:
+                lineR.DefaultColor = red;
+                break;
+            default:
+                lineR.DefaultColor = green;
+                break;
         }
 
-        return new DiagonalData(rightCutoff, leftCutoff, rightPoints, leftPoints);
+        switch (dd.leftPoints)
+        {
+            case 3:
+                lineL.DefaultColor = yellow;
+                break;
+            case 2:
+                lineL.DefaultColor = orange;
+                break;
+            case 1:
+                lineL.DefaultColor = red;
+                break;
+            default:
+                lineL.DefaultColor = green;
+                break;
+        }
     }
 
     private int ScanSide(int direction)
@@ -194,9 +222,6 @@ public class AICar : BaseCar
         var leftPoints = ScanSide(-1);
         var rightPoints = ScanSide(1);
 
-        //GD.Print("leftpoints: " + leftPoints);
-        //GD.Print("rightpoints: " + rightPoints);
-
         if (leftPoints > rightPoints)
         {
             AiDirection = Direction.LEFT;
@@ -211,5 +236,12 @@ public class AICar : BaseCar
         {
             ScanForward();
         }
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        base._PhysicsProcess(delta);
+        DiagonalData dd = ScanDiagonals();
+        DrawDiagonals(dd);
     }
 }
