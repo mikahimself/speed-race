@@ -11,10 +11,6 @@ public class AICar : BaseCar
     
 
     public struct DiagonalData {
-        /*Vector2 rightHit;
-        Vector2 leftHit;
-        int rightPoints;
-        int leftPoints;*/
         public DiagonalData(Vector2 rh, Vector2 lh, int rp, int lp)
         {
             rightHit = rh;
@@ -27,7 +23,7 @@ public class AICar : BaseCar
         public int rightPoints { get; }
         public int leftPoints { get; }
 
-        public override string ToString() => $"RightHit: {rightHit.x}, {rightHit.y} ";
+        public override string ToString() => $"RightHit: {rightHit.x}, {rightHit.y} | LeftHit: {leftHit.x}, {leftHit.y} | RightPoints: {rightPoints} | LeftPoints: {leftPoints}";
     }
 
     [Export]
@@ -35,11 +31,13 @@ public class AICar : BaseCar
     public Direction AiDirection = Direction.FORWARD;
     public Line2D lineR;
     public Line2D lineL;
-
+    private bool _randomTurn = false;
     private Color green = new Color(0, 1, 0, 1);
     private Color yellow = new Color(1, 1, 0, 1);
     private Color red = new Color(1, 0, 0, 1);
     private Color orange = new Color(1, 0.5f, 0, 1);
+    public Timer moveTimer;
+    Timer turnTimer;
 
     public override void _Ready()
     {
@@ -50,6 +48,10 @@ public class AICar : BaseCar
         lineL.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(-160, -160) };
         AddChild(lineR);
         AddChild(lineL);
+        moveTimer = (Timer)GetNode("MoveTimer");
+        moveTimer.Connect("timeout", this, "_onMoveTimerTimeout");
+        turnTimer = (Timer)GetNode("TurnTimer");
+        turnTimer.Connect("timeout", this, "_onTurnTimerTimeout");
 
         line = (Line2D)GetNode("Line2D");
         line.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(0, -320)};
@@ -57,33 +59,42 @@ public class AICar : BaseCar
 
     public override void GetControls(float delta)
     {
+        DiagonalData dd = ScanDiagonals();
         switch (AiDirection)
         {
             case Direction.FORWARD:
-                SteerForward();
+                SteerForward(dd);
                 break;
             case Direction.LEFT:
-                SteerSideways(-1);
+                SteerSideways(dd);
                 break;
             case Direction.RIGHT:
-                SteerSideways(1);
+                SteerSideways(dd);
                 break;
             default:
-                SteerForward();
+                SteerForward(dd);
                 break;
         }
     }
 
-    private void SteerForward()
+    private void SteerForward(DiagonalData dd)
     {
+        if (moveTimer.IsStopped())
+        {
+            moveTimer.Start();
+        }
         SideSpeed = 0;
         var forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
         var forwardPosId = map.GetCellv(forwardPos);
        
         if (_CheckOffroadTile(forwardPosId))
         {
-            SetTurnDirection();
+            SetTurnDirection(dd);
             return;
+        }
+        else if (dd.rightPoints <= 2 || dd.leftPoints <= 2)
+        {
+            SetTurnDirection(dd);
         }
         else
         {
@@ -94,33 +105,35 @@ public class AICar : BaseCar
 
     private void ScanForward()
     {
-        // Tsekkaas ennen eteen ajamista miten kaukana ollaan laidasta.
         var forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
         var forwardPosId = map.GetCellv(forwardPos);
         if (!_CheckOffroadTile(forwardPosId))
         {
+            GD.Print("Go forward");
             AiDirection = Direction.FORWARD;
         }
         
     }
 
-    private void SteerSideways(int direction)
+    private void SteerSideways(DiagonalData dd)
     {
-        SideSpeed = MaxSideSpeed * direction;
+        //int direction = dd.rightPoints > dd.leftPoints ? 1 : -1;
+        
         _speed = MaxSpeed + 400;
-
-        var left = ScanSide(-1);
-        var right = ScanSide(1);
 
         if (AiDirection == Direction.LEFT )
         {
-            if (left < right || right > 5) {
+            SideSpeed = MaxSideSpeed * -1;
+            if (dd.leftPoints <= 3) {
+                GD.Print("Left points running low.");
                 ScanForward();
             }
         }
         if (AiDirection == Direction.RIGHT)
         {
-            if (left > right || left > 5) {
+            SideSpeed = MaxSideSpeed;
+            if (dd.rightPoints <= 3) {
+                GD.Print("Right points running low.");
                 ScanForward();
             }
         }
@@ -154,7 +167,7 @@ public class AICar : BaseCar
         }
         leftCutoff = new Vector2((leftPoints + 1) * 32, (leftPoints + 1) * 32);
         
-        return new DiagonalData(rightCutoff, leftCutoff, rightPoints, leftPoints);
+        return new DiagonalData(rightCutoff, leftCutoff, rightPoints, Math.Abs(leftPoints));
     }
 
     public void DrawDiagonals(DiagonalData dd)
@@ -200,42 +213,79 @@ public class AICar : BaseCar
         }
     }
 
-    private int ScanSide(int direction)
+    private void SetTurnDirection(DiagonalData dd)
     {
-        int sidePoints = 0;
-
-        for (int i = 1; i <= 10; i++)
+        if (dd.rightPoints > 3 && dd.leftPoints > 3 && _randomTurn)
         {
-            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(i * (32 * direction), 0)) / 4);
-            var spId = map.GetCellv(sidePoint);
-            if (!_CheckOffroadTile(spId))
+            if (GD.RandRange(0, 10) < 5)
             {
-                sidePoints++;
+                AiDirection = Direction.RIGHT;
+                _randomTurn = false;
+                turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                GD.Print("felt like turning right");
+            }
+            else
+            {
+                AiDirection = Direction.LEFT;
+                _randomTurn = false;
+                turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                GD.Print("felt like turning left");
+            }
+                
+        }
+        else if (dd.leftPoints > dd.rightPoints)
+        {
+            if (dd.rightPoints <= 2 && dd.leftPoints - dd.rightPoints > 1)
+            {
+                AiDirection = Direction.LEFT;
+                turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                GD.Print("Low Points - Go Left " + dd);
+            } 
+            else if (dd.rightPoints + 7 < dd.leftPoints)
+            {
+                AiDirection = Direction.LEFT;
+                turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                GD.Print("Much more space on left " + dd);
             }
         }
-        return sidePoints;
-    }
-
-    private void SetTurnDirection()
-    {
-        // Check left
-        var leftPoints = ScanSide(-1);
-        var rightPoints = ScanSide(1);
-
-        if (leftPoints > rightPoints)
+        
+        else if (dd.rightPoints > dd.leftPoints)
         {
-            AiDirection = Direction.LEFT;
-            GD.Print("Go Left");
-        }
-        else if (rightPoints > leftPoints)
-        {
-            AiDirection = Direction.RIGHT;
-            GD.Print("GO Right");
+            if (dd.leftPoints <= 2 && dd.rightPoints - dd.leftPoints > 1)
+            {
+                AiDirection = Direction.RIGHT;
+                turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                GD.Print("GO Right: " + dd);
+            }
+            else if (dd.leftPoints + 7 < dd.rightPoints)
+            {
+                AiDirection = Direction.RIGHT;
+                turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                GD.Print("Much more space on right " + dd);
+            }
+            
         }
         else
         {
             ScanForward();
         }
+    }
+
+    public void _onMoveTimerTimeout()
+    {
+        GD.Print("Timer Timeout, direction: " + AiDirection);
+        if (AiDirection == Direction.FORWARD)
+        {
+            DiagonalData dd = ScanDiagonals();
+            _randomTurn = true;
+            SetTurnDirection(dd);
+        }
+        
+    }
+
+    public void _onTurnTimerTimeout()
+    {
+        AiDirection = Direction.FORWARD;
     }
 
     public override void _PhysicsProcess(float delta)
