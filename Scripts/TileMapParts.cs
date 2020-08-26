@@ -270,7 +270,8 @@ public class TileMapParts : TileMap
        15 - Center to Right
     */
 
-    public static int[] track = {
-      13, 15, 1, 4, 0, 9, 1, 8, 2, 7, 3, 6, 2, 5, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    public static List<int> track = new List<int> {
+      //13, 15, 1, 4, 0, 9, 1, 8, 2, 7, 3, 6, 2, 5, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      0, 0, 
     };
 }

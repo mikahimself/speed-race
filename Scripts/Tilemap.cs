@@ -33,39 +33,49 @@ public class Tilemap : Node2D
         cam.EditorDrawDragMargin = true;
         car = (KinematicBody2D)GetNode("PlayerCar");
         aicar = (KinematicBody2D)GetNode("AICar");
-        car.Position = new Vector2(_screenW / 2, currentHeight * _tileSize - _screenH / 2);
-        aicar.Position = new Vector2(_screenW / 2 + 200, currentHeight * _tileSize - _screenH / 2);
+        car.Position = new Vector2(_screenW / 2, _screenH / 2 - 400);
+        aicar.Position = new Vector2(_screenW / 2 - 200, _screenH / 2 - 400);
+
         GD.Print("elapsed: " + elapsed);
         mapstartTime = OS.GetTicksMsec();
     }
 
     public void SetTiles()
     {
-        for (int i = 0; i < TileMapParts.track.Length; i++)
+        for (int i = 0; i < TileMapParts.track.Count; i++)
         {
             SetTileParts(TileMapParts.track[i], i);
         }
     }
 
-    public void SetTileParts(int part, int height)
+    public void AddTiles()
     {
+        TileMapParts.track.Add((int)GD.RandRange(0, 4));
+        SetTileParts(TileMapParts.track[TileMapParts.track.Count -1], 1);
+        if (TileMapParts.track.Count > 5) 
+        {
+            TileMapParts.track.RemoveAt(0);
+        }
+    }
+
+    async public void SetTileParts(int part, int height)
+    {
+        currentHeight -= TileMapParts.mapParts[part].Length;
         for (int i = 0; i < TileMapParts.mapParts[part].Length; i++)
         {
             for (int j = 0; j < TileMapParts.mapParts[part][i].Length; j++)
             {
-                tm.SetCell(j, i + currentHeight, TileMapParts.mapParts[part][i][j]);
+                tm.SetCell(j, currentHeight + i, TileMapParts.mapParts[part][i][j]);
+//                await ToSignal(GetTree().CreateTimer(0.01f), "timeout");
             }
         }
-        currentHeight += TileMapParts.mapParts[part].Length;
     }
 
     public override void _Process(float delta)
     {
-        //cam.Position += new Vector2(0, -scrollSpeed);
-        //if (cam.Position.y < _screenH / 2)
-        //{
-        //    var elapsed = OS.GetTicksMsec() - mapstartTime;
-        //    GD.Print("Time to end: " + elapsed / 100);
-        //}
+        if (car.Position.y - _screenH < currentHeight * _tileSize)
+        {
+            AddTiles();
+        }
     }
 }
