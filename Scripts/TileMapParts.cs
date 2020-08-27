@@ -251,6 +251,19 @@ public class TileMapParts : TileMap
         leftToCenter,
         twoLaneNarrowLeft
     };
+
+    public static int[][] mapCounterparts = {
+        new int[] {0, 0, 0, 4, 4}, // 0
+        new int[] {1, 1, 5, 9}, // 1
+        new int[] {2, 2, 6, 8}, // 2
+        new int[] {3, 3, 7}, // 3
+        new int[] {1, 1, 1, 5}, // 4
+        new int[] {2, 2, 6}, // 5
+        new int[] {3, 3, 3, 7}, // 6
+        new int[] {2, 2, 2, 6}, // 7
+        new int[] {1, 1, 9}, // 8
+        new int[] {0, 0, 0, 4}, // 9
+    };
     /*
         0 - Widest *
         1 - Wide *

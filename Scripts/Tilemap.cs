@@ -19,24 +19,22 @@ public class Tilemap : Node2D
     int currentHeight = 0;
 
     uint mapstartTime;
+    Timer pt;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         _screenW = (int)GetViewport().Size.x;
         _screenH = (int)GetViewport().Size.y;
         tm = (TileMap)GetNode("TileMap");
-        var timestart = OS.GetTicksMsec();
+        pt = (Timer)GetNode("PlayTimer");
+        pt.Connect("timeout", this, "_OnPlayTimerTimeout");
         SetTiles();
-        var timenow = OS.GetTicksMsec();
-        var elapsed = timenow - timestart;
         cam = (Camera2D)GetNode("PlayerCar/Camera2D");
         cam.EditorDrawDragMargin = true;
         car = (KinematicBody2D)GetNode("PlayerCar");
         aicar = (KinematicBody2D)GetNode("AICar");
         car.Position = new Vector2(_screenW / 2, _screenH / 2 - 400);
         aicar.Position = new Vector2(_screenW / 2 - 200, _screenH / 2 - 400);
-
-        GD.Print("elapsed: " + elapsed);
         mapstartTime = OS.GetTicksMsec();
     }
 
@@ -50,15 +48,22 @@ public class Tilemap : Node2D
 
     public void AddTiles()
     {
-        TileMapParts.track.Add((int)GD.RandRange(0, 4));
+        //TileMapParts.track.Add((int)GD.RandRange(0, 4));
+        int last = TileMapParts.track[TileMapParts.track.Count -1];
+        //GD.Print("Last part was: " + last);
+        int toAdd = (int)GD.RandRange(0, TileMapParts.mapCounterparts[last].Length);
+        //GD.Print("Gonna add: " + toAdd);
+        TileMapParts.track.Add(TileMapParts.mapCounterparts[last][toAdd]);
+        //GD.Print("gonna set stuff now.");
+
         SetTileParts(TileMapParts.track[TileMapParts.track.Count -1], 1);
-        if (TileMapParts.track.Count > 5) 
+        /*if (TileMapParts.track.Count > 5) 
         {
             TileMapParts.track.RemoveAt(0);
-        }
+        }*/
     }
 
-    async public void SetTileParts(int part, int height)
+    public void SetTileParts(int part, int height)
     {
         currentHeight -= TileMapParts.mapParts[part].Length;
         for (int i = 0; i < TileMapParts.mapParts[part].Length; i++)
@@ -73,9 +78,26 @@ public class Tilemap : Node2D
 
     public override void _Process(float delta)
     {
-        if (car.Position.y - _screenH < currentHeight * _tileSize)
+        if (car.Position.y - _screenH < currentHeight * _tileSize || aicar.Position.y - _screenH < currentHeight * _tileSize)
         {
             AddTiles();
+        }
+    }
+
+    private void _OnPlayTimerTimeout()
+    {
+        var timenow = OS.GetTicksMsec();
+        var elapsed = timenow - mapstartTime;
+        uint test = 60000;
+        if (elapsed < test)
+        {
+            var elapsedSecs = (elapsed / 1000);
+            GD.Print("Playtime: " + elapsedSecs + " seconds");
+        }
+        else 
+        {
+            var elapsedMins = ((float)elapsed / 1000) / 60;
+            GD.Print("Playtime: " + elapsedMins + " minutes");
         }
     }
 }

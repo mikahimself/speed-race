@@ -13,3 +13,12 @@ default_color = Color( 0.4, 0.501961, 1, 1 )
 
 [node name="MoveTimer" type="Timer" parent="." index="5"]
 wait_time = 3.0
+
+[node name="Camera2D" type="Camera2D" parent="." index="6"]
+current = true
+limit_left = 0
+limit_right = 1024
+smoothing_enabled = true
+offset_v = -0.75
+drag_margin_top = 1.0
+drag_margin_bottom = 1.0

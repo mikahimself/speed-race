@@ -19,3 +19,7 @@ tile_data = PoolIntArray( 2883768, 0, 0 )
 [node name="PlayerCar" parent="." instance=ExtResource( 3 )]
 
 [node name="AICar" parent="." instance=ExtResource( 4 )]
+
+[node name="PlayTimer" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true

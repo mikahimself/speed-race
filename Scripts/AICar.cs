@@ -100,7 +100,7 @@ public class AICar : BaseCar
         {
             line.DefaultColor = new Color(0, 0, 1, 1);
         }
-        _speed = MaxSpeed + 450;
+        _speed = MaxSpeed + 0;
     }
 
     private void ScanForward()
@@ -109,7 +109,7 @@ public class AICar : BaseCar
         var forwardPosId = map.GetCellv(forwardPos);
         if (!_CheckOffroadTile(forwardPosId))
         {
-            GD.Print("Go forward");
+            //GD.Print("Go forward");
             AiDirection = Direction.FORWARD;
         }
         
@@ -119,13 +119,13 @@ public class AICar : BaseCar
     {
         //int direction = dd.rightPoints > dd.leftPoints ? 1 : -1;
         
-        _speed = MaxSpeed + 400;
+        _speed = MaxSpeed + 0;
 
         if (AiDirection == Direction.LEFT )
         {
             SideSpeed = MaxSideSpeed * -1;
             if (dd.leftPoints <= 3) {
-                GD.Print("Left points running low.");
+              //  GD.Print("Left points running low.");
                 ScanForward();
             }
         }
@@ -133,7 +133,7 @@ public class AICar : BaseCar
         {
             SideSpeed = MaxSideSpeed;
             if (dd.rightPoints <= 3) {
-                GD.Print("Right points running low.");
+                //GD.Print("Right points running low.");
                 ScanForward();
             }
         }
@@ -222,14 +222,14 @@ public class AICar : BaseCar
                 AiDirection = Direction.RIGHT;
                 _randomTurn = false;
                 turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                GD.Print("felt like turning right");
+                //GD.Print("felt like turning right");
             }
             else
             {
                 AiDirection = Direction.LEFT;
                 _randomTurn = false;
                 turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                GD.Print("felt like turning left");
+                //GD.Print("felt like turning left");
             }
                 
         }
@@ -239,13 +239,13 @@ public class AICar : BaseCar
             {
                 AiDirection = Direction.LEFT;
                 turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                GD.Print("Low Points - Go Left " + dd);
+                //GD.Print("Low Points - Go Left " + dd);
             } 
             else if (dd.rightPoints + 7 < dd.leftPoints)
             {
                 AiDirection = Direction.LEFT;
                 turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                GD.Print("Much more space on left " + dd);
+                //GD.Print("Much more space on left " + dd);
             }
         }
         
@@ -255,13 +255,13 @@ public class AICar : BaseCar
             {
                 AiDirection = Direction.RIGHT;
                 turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                GD.Print("GO Right: " + dd);
+                //GD.Print("GO Right: " + dd);
             }
             else if (dd.leftPoints + 7 < dd.rightPoints)
             {
                 AiDirection = Direction.RIGHT;
                 turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                GD.Print("Much more space on right " + dd);
+                //GD.Print("Much more space on right " + dd);
             }
             
         }
@@ -273,7 +273,7 @@ public class AICar : BaseCar
 
     public void _onMoveTimerTimeout()
     {
-        GD.Print("Timer Timeout, direction: " + AiDirection);
+        //GD.Print("Timer Timeout, direction: " + AiDirection);
         if (AiDirection == Direction.FORWARD)
         {
             DiagonalData dd = ScanDiagonals();
