@@ -22,12 +22,20 @@ public class TilemapToArray : Node2D
     {
         readout = true;
         var xline = "new int[] {";
-        for (int y = 0; y < 16; y++)
+        for (int y = 0; y < 30; y++)
         {
-            for (int x = 0; x < 16; x++)
+            for (int x = 0; x < 30; x++)
             {
-                if (tiles.GetCell(x, y) != -1) {
-                    xline += tiles.GetCell(x, y) + ", ";
+                int tileID = tiles.GetCell(x, y);
+                if (tileID != -1) {
+                    if (tileID < 10)
+                    {
+                        xline += " " + tiles.GetCell(x, y) + ", ";
+                    }
+                    else
+                    {
+                        xline += tiles.GetCell(x, y) + ", ";
+                    }
                 }
             }
             xline += "},";
