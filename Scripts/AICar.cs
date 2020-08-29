@@ -11,20 +11,27 @@ public class AICar : BaseCar
     
 
     public struct DiagonalData {
-        public DiagonalData(Vector2 rh, Vector2 lh, int rp, int lp)
+        public DiagonalData(Vector2 rh, Vector2 lh, Vector2 fh, int rp, int lp, int fp)
         {
             rightHit = rh;
             leftHit = lh;
             rightPoints = rp;
             leftPoints = lp;
+            forwardHit = fh;
+            forwardPoints = fp;
         }
         public Vector2 rightHit { get; }
         public Vector2 leftHit { get; }
+        public Vector2 forwardHit { get; }
         public int rightPoints { get; }
         public int leftPoints { get; }
+        public int forwardPoints { get; }
 
         public override string ToString() => $"RightHit: {rightHit.x}, {rightHit.y} | LeftHit: {leftHit.x}, {leftHit.y} | RightPoints: {rightPoints} | LeftPoints: {leftPoints}";
     }
+
+    [Export]
+    public Texture CpuTexture;
     
     private Direction _aiDirection = Direction.FORWARD;
     private Line2D _lineForward;
@@ -55,12 +62,17 @@ public class AICar : BaseCar
         _lineRight = (Line2D)GetNode("Line2Ds/LineRight");
         _lineLeft = (Line2D)GetNode("Line2Ds/LineLeft");
         
-        _lineForward.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(0, -320)};
+        /*_lineForward.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(0, -320)};
         _lineRight.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(160, -160) };
-        _lineLeft.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(-160, -160) };
+        _lineLeft.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(-160, -160) };*/
         
         _rayLeft = (RayCast2D)GetNode("RayCast2DLeft");
         _rayRight = (RayCast2D)GetNode("RayCast2DRight");
+        if (CpuTexture != null)
+        {
+            Sprite car = (Sprite)GetNode("CarSprite");
+            car.Texture = CpuTexture;
+        }
     }
 
     public override void GetControls(float delta)
@@ -86,6 +98,8 @@ public class AICar : BaseCar
     private void SteerForward(DiagonalData dd)
     {
         SideSpeed = 0;
+        _speed = MaxSpeed;
+
         if (_moveTimer.IsStopped())
         {
             _moveTimer.Start();
@@ -94,8 +108,9 @@ public class AICar : BaseCar
         Vector2 forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
         int forwardPosId = map.GetCellv(forwardPos);
        
-        if (_CheckOffroadTile(forwardPosId))
+        if (dd.forwardPoints <= 12)
         {
+            _speed = MaxSpeed - 10f;
             SetTurnDirection(dd);
             return;
         }
@@ -103,19 +118,24 @@ public class AICar : BaseCar
         {
             SetTurnDirection(dd);
         }
-        else
+        
+        /*else
         {
             _lineForward.DefaultColor = new Color(0, 0, 1, 1);
-        }
+        }*/
 
-        _speed = MaxSpeed;
+        
     }
 
-    private void ScanForward()
+    private void ScanForward(DiagonalData dd)
     {
-        Vector2 forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
+        /*Vector2 forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
         int forwardPosId = map.GetCellv(forwardPos);
         if (!_CheckOffroadTile(forwardPosId))
+        {
+            _aiDirection = Direction.FORWARD;
+        }*/
+        if (dd.forwardPoints > 5)
         {
             _aiDirection = Direction.FORWARD;
         }
@@ -125,28 +145,20 @@ public class AICar : BaseCar
     {
         _speed = MaxSpeed;
 
-        /*if (_rayLeft.IsColliding())
-        {
-            var objecto = _rayLeft.GetCollider();
-            if (objecto is KinematicBody2D)
-            {
-                KinematicBody2D kb = (KinematicBody2D)objecto;
-                GD.Print(this.Name + " is colliding with " + kb.Name);
-            }
-        }*/
-
         if (_aiDirection == Direction.LEFT )
         {
             SideSpeed = MaxSideSpeed * -1;
             if (dd.leftPoints <= 3 || _rayLeft.IsColliding()) {
-                ScanForward();
+                //ScanForward(dd);
+                _aiDirection = Direction.FORWARD;
             }
         }
         if (_aiDirection == Direction.RIGHT)
         {
             SideSpeed = MaxSideSpeed;
             if (dd.rightPoints <= 3 || _rayRight.IsColliding()) {
-                ScanForward();
+                //ScanForward(dd);
+                _aiDirection = Direction.FORWARD;
             }
         }
     }
@@ -155,8 +167,10 @@ public class AICar : BaseCar
     {
         var leftPoints = 0;
         var rightPoints = 0;
+        var forwardPoints = 0;
         var leftCutoff = new Vector2(-5 * 32, -5 * 32);
         var rightCutoff = new Vector2(5 * 32, -5 * 32);
+        var forwardCutoff = new Vector2(0, -5 * 32);
         bool foundOffRoad = false;
 
         while (!foundOffRoad && rightPoints < 15)
@@ -178,11 +192,22 @@ public class AICar : BaseCar
             foundOffRoad = _CheckOffroadTile(spId);
         }
         leftCutoff = new Vector2((leftPoints + 1) * 32, (leftPoints + 1) * 32);
+
+        foundOffRoad = false;
+
+        while (!foundOffRoad && forwardPoints > -15)
+        {
+            forwardPoints--;
+            var forwardPoint = (map.WorldToMap(GlobalPosition + new Vector2(0, forwardPoints * 32)) / 4);
+            var fpId = map.GetCellv(forwardPoint);
+            foundOffRoad = _CheckOffroadTile(fpId);
+        }
+        forwardCutoff = new Vector2(0, (forwardPoints + 1) * 32);
         
-        return new DiagonalData(rightCutoff, leftCutoff, rightPoints, Math.Abs(leftPoints));
+        return new DiagonalData(rightCutoff, leftCutoff, forwardCutoff, rightPoints, Math.Abs(leftPoints), Math.Abs(forwardPoints));
     }
 
-    public void DrawDiagonals(DiagonalData dd)
+    public void DrawDirections(DiagonalData dd)
     {
         _lineRight.ClearPoints();
         _lineRight.AddPoint(new Vector2(0, 0), 0);
@@ -191,6 +216,10 @@ public class AICar : BaseCar
         _lineLeft.ClearPoints();
         _lineLeft.AddPoint(new Vector2(0, 0), 0);
         _lineLeft.AddPoint(new Vector2(dd.leftHit.x, dd.leftHit.y), 1);
+
+        _lineForward.ClearPoints();
+        _lineForward.AddPoint(new Vector2(0, 0), 0);
+        _lineForward.AddPoint(new Vector2(dd.forwardHit.x, dd.forwardHit.y), 1);
         
         switch (dd.rightPoints)
         {
@@ -223,6 +252,22 @@ public class AICar : BaseCar
                 _lineLeft.DefaultColor = Green;
                 break;
         }
+        
+        switch (dd.forwardPoints)
+        {
+            case 3:
+                _lineForward.DefaultColor = Yellow;
+                break;
+            case 2:
+                _lineForward.DefaultColor = Orange;
+                break;
+            case 1:
+                _lineForward.DefaultColor = Red;
+                break;
+            default:
+                _lineForward.DefaultColor = Green;
+                break;
+        }
     }
 
     private void SetTurnDirection(DiagonalData dd)
@@ -253,46 +298,50 @@ public class AICar : BaseCar
             {
                 _aiDirection = Direction.FORWARD;
             }
-            
+
             _randomTurn = false;
             _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
                 
         }
         else if (dd.leftPoints > dd.rightPoints)
         {
-            if (dd.rightPoints <= 2 && dd.leftPoints - dd.rightPoints > 1)
-            {
-                _aiDirection = Direction.LEFT;
-                _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                //GD.Print("Low Points - Go Left " + dd);
-            } 
-            else if (dd.rightPoints + 5 < dd.leftPoints)
+            
+            if (dd.rightPoints + 5 < dd.leftPoints)
             {
                 _aiDirection = Direction.LEFT;
                 _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
                 //GD.Print("Much more space on left " + dd);
             }
+            else if (dd.rightPoints <= 2 && dd.leftPoints - dd.rightPoints > 1)
+            {
+                _aiDirection = Direction.LEFT;
+                _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                //GD.Print("Low Points - Go Left " + dd);
+            } 
+            
         }
         
         else if (dd.rightPoints > dd.leftPoints)
         {
-            if (dd.leftPoints <= 2 && dd.rightPoints - dd.leftPoints > 1)
-            {
-                _aiDirection = Direction.RIGHT;
-                _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                //GD.Print("GO Right: " + dd);
-            }
-            else if (dd.leftPoints + 5 < dd.rightPoints)
+            if (dd.leftPoints + 5 < dd.rightPoints)
             {
                 _aiDirection = Direction.RIGHT;
                 _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
                 //GD.Print("Much more space on right " + dd);
             }
+            else if (dd.leftPoints <= 2 && dd.rightPoints - dd.leftPoints > 1)
+            {
+                _aiDirection = Direction.RIGHT;
+                _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
+                //GD.Print("GO Right: " + dd);
+            }
+            
         }
-        else
+        /*else
         {
-            ScanForward();
-        }
+            ScanForward(dd);
+        }*/
+
     }
 
     public void _onMoveTimerTimeout()
@@ -314,6 +363,6 @@ public class AICar : BaseCar
     {
         base._PhysicsProcess(delta);
         DiagonalData dd = ScanDiagonals();
-        DrawDiagonals(dd);
+        //DrawDirections(dd);
     }
 }

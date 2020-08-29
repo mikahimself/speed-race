@@ -5,6 +5,7 @@
 
 [node name="AICar" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
+MaxSpeed = -650.0
 
 [node name="RayCast2DLeft" type="RayCast2D" parent="." index="0"]
 enabled = true
