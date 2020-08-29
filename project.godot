@@ -23,6 +23,11 @@ config/icon="res://icon.png"
 
 TileMapParts="*res://Scripts/TileMapParts.cs"
 
+[layer_names]
+
+2d_physics/layer_1="Cars"
+2d_physics/layer_2="Terrain"
+
 [logging]
 
 file_logging/enable_file_logging=true

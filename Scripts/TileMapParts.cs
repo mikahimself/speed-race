@@ -260,9 +260,9 @@ public class TileMapParts : TileMap
         new int[] {1, 1, 1, 5}, // 4
         new int[] {2, 2, 6}, // 5
         new int[] {3, 3, 3, 7}, // 6
-        new int[] {2, 2, 2, 6}, // 7
+        new int[] {2, 2, 2, 8}, // 7
         new int[] {1, 1, 9}, // 8
-        new int[] {0, 0, 0, 4}, // 9
+        new int[] {0}, // 9
     };
     /*
         0 - Widest *
@@ -284,7 +284,6 @@ public class TileMapParts : TileMap
     */
 
     public static List<int> track = new List<int> {
-      //13, 15, 1, 4, 0, 9, 1, 8, 2, 7, 3, 6, 2, 5, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       0, 0, 
     };
 }

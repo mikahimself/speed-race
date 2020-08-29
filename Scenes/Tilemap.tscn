@@ -13,12 +13,14 @@ scrollSpeed = 2
 scale = Vector2( 4, 4 )
 tile_set = ExtResource( 1 )
 cell_size = Vector2( 16, 16 )
+collision_layer = 2
 format = 1
 tile_data = PoolIntArray( 2883768, 0, 0 )
 
 [node name="PlayerCar" parent="." instance=ExtResource( 3 )]
 
-[node name="AICar" parent="." instance=ExtResource( 4 )]
+[node name="AICar1" parent="." instance=ExtResource( 4 )]
+MaxSpeed = -450.0
 
 [node name="PlayTimer" type="Timer" parent="."]
 wait_time = 10.0
