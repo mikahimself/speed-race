@@ -13,7 +13,8 @@ public class Tilemap : Node2D
     KinematicBody2D AICar;
     KinematicBody2D AICar2;
     KinematicBody2D AICar3;
-    
+    PackedScene CloudScene; 
+
     public int CurrentMapHeight = 0;
 
     private uint _mapstartTime;
@@ -22,6 +23,7 @@ public class Tilemap : Node2D
         0, 1, 2, 3, -1, -1, -1, -1
     }; 
     Timer pt;
+    
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -47,6 +49,11 @@ public class Tilemap : Node2D
         AICar2.Position = new Vector2(_screenW / 2 + 200, _screenH / 2 - 500);
         AICar3.Position = new Vector2(_screenW / 2, _screenH / 2 - 600);
         _mapstartTime = OS.GetTicksMsec();
+
+        CloudScene = (PackedScene)ResourceLoader.Load("res://Scenes/Decoration/Cloud.tscn");
+        Cloud cloudSprite = (Cloud)CloudScene.Instance();
+        cloudSprite.SetCloudPosition(0, 1000, PlayerCar.Position.y - 600);
+        AddChild(cloudSprite);
     }
 
     public void SetTiles()
@@ -84,6 +91,22 @@ public class Tilemap : Node2D
         }
     }
 
+    public void MoveClouds()
+    {
+        /*foreach (Sprite cloud in clouds)
+        {
+            cloud.Position += new Vector2(0, 1);
+            if (cloud.Position.y > PlayerCar.Position.y + 200)
+            {
+                cloud.Position += new Vector2((float)GD.RandRange(0, 500f), -1400);
+                if (cloud.Position.x > _screenW)
+                {
+                    cloud.Position += new Vector2((float)GD.RandRange(-_screenW, -200f), 0);
+                }
+            }
+        }*/
+    }
+
     public void SetDecorations(int x, int y)
     {
         TileMapDecor.SetCell(x, y, _decorationTiles[(int)GD.RandRange(0, _decorationTiles.Length)]);
@@ -112,5 +135,10 @@ public class Tilemap : Node2D
             var elapsedMins = ((float)elapsed / 1000) / 60;
             GD.Print(String.Format("Playtime: {0:0.00} minutes", elapsedMins));
         }
+    }
+
+    public override void _PhysicsProcess(float delta)
+    {
+        MoveClouds();
     }
 }
