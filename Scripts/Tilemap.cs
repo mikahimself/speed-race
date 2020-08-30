@@ -6,7 +6,8 @@ public class Tilemap : Node2D
     private int _screenH;
     private int _screenW;
     private int _tileSize = 64;
-    TileMap tm;
+    TileMap TileMapTrack;
+    TileMap TileMapDecor;
     Camera2D cam;
     KinematicBody2D PlayerCar;
     KinematicBody2D AICar;
@@ -16,22 +17,31 @@ public class Tilemap : Node2D
     public int CurrentMapHeight = 0;
 
     private uint _mapstartTime;
+
+    private int[] _decorationTiles = new int[] {
+        0, 1, 2, 3, -1, -1, -1, -1
+    }; 
     Timer pt;
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         _screenW = (int)GetViewport().Size.x;
         _screenH = (int)GetViewport().Size.y;
-        tm = (TileMap)GetNode("TileMap");
+        TileMapTrack = (TileMap)GetNode("TileMapTrack");
+        TileMapDecor = (TileMap)GetNode("TileMapDecoration");
         pt = (Timer)GetNode("PlayTimer");
         pt.Connect("timeout", this, "_OnPlayTimerTimeout");
         SetTiles();
         cam = (Camera2D)GetNode("PlayerCar/Camera2D");
-        cam.EditorDrawDragMargin = true;
+        //cam.EditorDrawDragMargin = true;
         PlayerCar = (KinematicBody2D)GetNode("PlayerCar");
+        PlayerCar.Set("Map", TileMapTrack);
         AICar = (KinematicBody2D)GetNode("AICar1");
+        AICar.Set("Map", TileMapTrack);
         AICar2 = (KinematicBody2D)GetNode("AICar2");
+        AICar2.Set("Map", TileMapTrack);
         AICar3 = (KinematicBody2D)GetNode("AICar3");
+        AICar3.Set("Map", TileMapTrack);
         PlayerCar.Position = new Vector2(_screenW / 2, _screenH / 2 - 400);
         AICar.Position = new Vector2(_screenW / 2 - 200, _screenH / 2 - 400);
         AICar2.Position = new Vector2(_screenW / 2 + 200, _screenH / 2 - 500);
@@ -43,33 +53,40 @@ public class Tilemap : Node2D
     {
         for (int i = 0; i < TileMapParts.track.Count; i++)
         {
-            SetTileParts(TileMapParts.track[i], i);
+            SetTrackParts(TileMapParts.track[i]);
         }
     }
 
     public void AddTrackPart()
     {
-        int last = TileMapParts.track[TileMapParts.track.Count -1];
-        int toAdd = (int)GD.RandRange(0, TileMapParts.mapCounterparts[last].Length);
-        TileMapParts.track.Add(TileMapParts.mapCounterparts[last][toAdd]);
+        int lastPart = TileMapParts.track[TileMapParts.track.Count -1];
+        int partToAdd = (int)GD.RandRange(0, TileMapParts.mapCounterparts[lastPart].Length);
+        TileMapParts.track.Add(TileMapParts.mapCounterparts[lastPart][partToAdd]);
 
-        SetTileParts(TileMapParts.track[TileMapParts.track.Count -1], 1);
-        /*if (TileMapParts.track.Count > 5) 
-        {
-            TileMapParts.track.RemoveAt(0);
-        }*/
+        SetTrackParts(TileMapParts.track[TileMapParts.track.Count -1]);
     }
 
-    public void SetTileParts(int part, int height)
+    public void SetTrackParts(int part)
     {
-        CurrentMapHeight -= TileMapParts.mapParts[part].Length;
-        for (int i = 0; i < TileMapParts.mapParts[part].Length; i++)
+        int partLength = TileMapParts.mapParts[part].Length;
+        
+        CurrentMapHeight -= partLength;
+        for (int i = 0; i < partLength; i++)
         {
             for (int j = 0; j < TileMapParts.mapParts[part][i].Length; j++)
             {
-                tm.SetCell(j, CurrentMapHeight + i, TileMapParts.mapParts[part][i][j]);
+                TileMapTrack.SetCell(j, CurrentMapHeight + i, TileMapParts.mapParts[part][i][j]);
+                if (TileMapParts.mapParts[part][i][j] == 3)
+                {
+                    SetDecorations(j, CurrentMapHeight + i);
+                }
             }
         }
+    }
+
+    public void SetDecorations(int x, int y)
+    {
+        TileMapDecor.SetCell(x, y, _decorationTiles[(int)GD.RandRange(0, _decorationTiles.Length)]);
     }
 
     public override void _Process(float delta)

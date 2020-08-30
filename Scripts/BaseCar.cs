@@ -28,10 +28,10 @@ public class BaseCar : KinematicBody2D
 
     };
 
-    protected TileMap map;
+    public TileMap Map { get; set; }
     public override void _Ready()
     {
-        map = (TileMap)GetParent().GetNode("TileMap");
+        //map = (TileMap)GetParent().GetNode("TileMap");
     }
 
     public virtual void GetControls(float delta)

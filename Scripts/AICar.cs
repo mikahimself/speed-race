@@ -62,10 +62,6 @@ public class AICar : BaseCar
         _lineRight = (Line2D)GetNode("Line2Ds/LineRight");
         _lineLeft = (Line2D)GetNode("Line2Ds/LineLeft");
         
-        /*_lineForward.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(0, -320)};
-        _lineRight.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(160, -160) };
-        _lineLeft.Points = new Vector2[] { GlobalPosition, GlobalPosition + new Vector2(-160, -160) };*/
-        
         _rayLeft = (RayCast2D)GetNode("RayCast2DLeft");
         _rayRight = (RayCast2D)GetNode("RayCast2DRight");
         if (CpuTexture != null)
@@ -105,8 +101,8 @@ public class AICar : BaseCar
             _moveTimer.Start();
         }
         
-        Vector2 forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
-        int forwardPosId = map.GetCellv(forwardPos);
+        Vector2 forwardPos = (Map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
+        int forwardPosId = Map.GetCellv(forwardPos);
        
         if (dd.forwardPoints <= 12)
         {
@@ -118,23 +114,10 @@ public class AICar : BaseCar
         {
             SetTurnDirection(dd);
         }
-        
-        /*else
-        {
-            _lineForward.DefaultColor = new Color(0, 0, 1, 1);
-        }*/
-
-        
     }
 
     private void ScanForward(DiagonalData dd)
     {
-        /*Vector2 forwardPos = (map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
-        int forwardPosId = map.GetCellv(forwardPos);
-        if (!_CheckOffroadTile(forwardPosId))
-        {
-            _aiDirection = Direction.FORWARD;
-        }*/
         if (dd.forwardPoints > 5)
         {
             _aiDirection = Direction.FORWARD;
@@ -149,7 +132,6 @@ public class AICar : BaseCar
         {
             SideSpeed = MaxSideSpeed * -1;
             if (dd.leftPoints <= 3 || _rayLeft.IsColliding()) {
-                //ScanForward(dd);
                 _aiDirection = Direction.FORWARD;
             }
         }
@@ -157,7 +139,6 @@ public class AICar : BaseCar
         {
             SideSpeed = MaxSideSpeed;
             if (dd.rightPoints <= 3 || _rayRight.IsColliding()) {
-                //ScanForward(dd);
                 _aiDirection = Direction.FORWARD;
             }
         }
@@ -176,8 +157,8 @@ public class AICar : BaseCar
         while (!foundOffRoad && rightPoints < 15)
         {
             rightPoints++;
-            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
-            var spId = map.GetCellv(sidePoint);
+            var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
+            var spId = Map.GetCellv(sidePoint);
             foundOffRoad = _CheckOffroadTile(spId);
         }
         rightCutoff = new Vector2((rightPoints - 1) * 32, -((rightPoints - 1) * 32));
@@ -187,8 +168,8 @@ public class AICar : BaseCar
         while (!foundOffRoad && leftPoints > -15)
         {
             leftPoints--;
-            var sidePoint = (map.WorldToMap(GlobalPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
-            var spId = map.GetCellv(sidePoint);
+            var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
+            var spId = Map.GetCellv(sidePoint);
             foundOffRoad = _CheckOffroadTile(spId);
         }
         leftCutoff = new Vector2((leftPoints + 1) * 32, (leftPoints + 1) * 32);
@@ -198,8 +179,8 @@ public class AICar : BaseCar
         while (!foundOffRoad && forwardPoints > -15)
         {
             forwardPoints--;
-            var forwardPoint = (map.WorldToMap(GlobalPosition + new Vector2(0, forwardPoints * 32)) / 4);
-            var fpId = map.GetCellv(forwardPoint);
+            var forwardPoint = (Map.WorldToMap(GlobalPosition + new Vector2(0, forwardPoints * 32)) / 4);
+            var fpId = Map.GetCellv(forwardPoint);
             foundOffRoad = _CheckOffroadTile(fpId);
         }
         forwardCutoff = new Vector2(0, (forwardPoints + 1) * 32);
@@ -337,11 +318,6 @@ public class AICar : BaseCar
             }
             
         }
-        /*else
-        {
-            ScanForward(dd);
-        }*/
-
     }
 
     public void _onMoveTimerTimeout()

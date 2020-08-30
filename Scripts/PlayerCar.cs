@@ -19,14 +19,14 @@ public class PlayerCar : BaseCar
 
         if (Input.IsActionPressed("ui_left"))
         {
-            SideSpeed = -MaxSideSpeed * speedFromMax;
+            SideSpeed = -MaxSideSpeed;// * speedFromMax;
         }
         if (Input.IsActionPressed("ui_right"))
         {
-            SideSpeed = MaxSideSpeed * speedFromMax;
+            SideSpeed = MaxSideSpeed;// * speedFromMax;
         }
-        var pos = (map.WorldToMap(GlobalPosition) / 4);
-        var mapid = map.GetCellv(pos);
+        var pos = (Map.WorldToMap(GlobalPosition) / 4);
+        var mapid = Map.GetCellv(pos);
         if (_CheckOffroadTile(mapid))
         {
             SideSpeed = SideSpeed / 2;

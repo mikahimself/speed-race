@@ -5,7 +5,6 @@
 
 [node name="AICar" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
-MaxSpeed = -650.0
 
 [node name="RayCast2DLeft" type="RayCast2D" parent="." index="0"]
 enabled = true
@@ -31,7 +30,6 @@ default_color = Color( 0.4, 0.501961, 1, 1 )
 wait_time = 3.0
 
 [node name="Camera2D" type="Camera2D" parent="." index="7"]
-current = true
 limit_left = 0
 limit_right = 1024
 smoothing_enabled = true
