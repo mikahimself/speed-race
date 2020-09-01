@@ -6,14 +6,15 @@ public class Tilemap : Node2D
     private int _screenH;
     private int _screenW;
     private int _tileSize = 64;
-    TileMap TileMapTrack;
-    TileMap TileMapDecor;
+    public TileMap TileMapTrack;
+    public TileMap TileMapDecor;
     Camera2D cam;
     KinematicBody2D PlayerCar;
-    KinematicBody2D AICar;
+    /*KinematicBody2D AICar;
     KinematicBody2D AICar2;
-    KinematicBody2D AICar3;
-    PackedScene CloudScene; 
+    KinematicBody2D AICar3;*/
+    PackedScene CloudScene;
+    AISpawner aiSpawner; 
 
     public int CurrentMapHeight = 0;
 
@@ -35,25 +36,16 @@ public class Tilemap : Node2D
         pt.Connect("timeout", this, "_OnPlayTimerTimeout");
         SetTiles();
         cam = (Camera2D)GetNode("PlayerCar/Camera2D");
-        //cam.EditorDrawDragMargin = true;
         PlayerCar = (KinematicBody2D)GetNode("PlayerCar");
         PlayerCar.Set("Map", TileMapTrack);
-        AICar = (KinematicBody2D)GetNode("AICar1");
-        AICar.Set("Map", TileMapTrack);
-        AICar2 = (KinematicBody2D)GetNode("AICar2");
-        AICar2.Set("Map", TileMapTrack);
-        AICar3 = (KinematicBody2D)GetNode("AICar3");
-        AICar3.Set("Map", TileMapTrack);
         PlayerCar.Position = new Vector2(_screenW / 2, _screenH / 2 - 400);
-        AICar.Position = new Vector2(_screenW / 2 - 200, _screenH / 2 - 400);
-        AICar2.Position = new Vector2(_screenW / 2 + 200, _screenH / 2 - 500);
-        AICar3.Position = new Vector2(_screenW / 2, _screenH / 2 - 600);
         _mapstartTime = OS.GetTicksMsec();
 
         CloudScene = (PackedScene)ResourceLoader.Load("res://Scenes/Decoration/Cloud.tscn");
         Cloud cloudSprite = (Cloud)CloudScene.Instance();
         cloudSprite.SetCloudPosition(0, 1000, PlayerCar.Position.y - 600);
         AddChild(cloudSprite);
+        SetupAISpawner();
     }
 
     public void SetTiles()
@@ -64,6 +56,13 @@ public class Tilemap : Node2D
         }
     }
 
+    public void SetupAISpawner()
+    {
+        aiSpawner = (AISpawner)GetNode("AISpawner");
+        //aiSpawner.Set("Map", TileMapTrack);
+        aiSpawner.Set("playerCar", PlayerCar);
+        aiSpawner.SetMap(TileMapTrack);
+    }
     public void AddTrackPart()
     {
         int lastPart = TileMapParts.track[TileMapParts.track.Count -1];
@@ -91,22 +90,6 @@ public class Tilemap : Node2D
         }
     }
 
-    public void MoveClouds()
-    {
-        /*foreach (Sprite cloud in clouds)
-        {
-            cloud.Position += new Vector2(0, 1);
-            if (cloud.Position.y > PlayerCar.Position.y + 200)
-            {
-                cloud.Position += new Vector2((float)GD.RandRange(0, 500f), -1400);
-                if (cloud.Position.x > _screenW)
-                {
-                    cloud.Position += new Vector2((float)GD.RandRange(-_screenW, -200f), 0);
-                }
-            }
-        }*/
-    }
-
     public void SetDecorations(int x, int y)
     {
         TileMapDecor.SetCell(x, y, _decorationTiles[(int)GD.RandRange(0, _decorationTiles.Length)]);
@@ -114,7 +97,7 @@ public class Tilemap : Node2D
 
     public override void _Process(float delta)
     {
-        if (PlayerCar.Position.y - _screenH < CurrentMapHeight * _tileSize || AICar.Position.y - _screenH < CurrentMapHeight * _tileSize)
+        if (PlayerCar.Position.y - _screenH < CurrentMapHeight * _tileSize)
         {
             AddTrackPart();
         }
@@ -139,6 +122,6 @@ public class Tilemap : Node2D
 
     public override void _PhysicsProcess(float delta)
     {
-        MoveClouds();
+        //
     }
 }

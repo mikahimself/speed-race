@@ -100,9 +100,6 @@ public class AICar : BaseCar
         {
             _moveTimer.Start();
         }
-        
-        Vector2 forwardPos = (Map.WorldToMap(GlobalPosition + new Vector2(0, -320)) / 4);
-        int forwardPosId = Map.GetCellv(forwardPos);
        
         if (dd.forwardPoints <= 12)
         {
@@ -146,6 +143,7 @@ public class AICar : BaseCar
 
     private DiagonalData ScanDiagonals()
     {
+        
         var leftPoints = 0;
         var rightPoints = 0;
         var forwardPoints = 0;
@@ -154,37 +152,40 @@ public class AICar : BaseCar
         var forwardCutoff = new Vector2(0, -5 * 32);
         bool foundOffRoad = false;
 
-        while (!foundOffRoad && rightPoints < 15)
+        if (Map != null)
         {
-            rightPoints++;
-            var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
-            var spId = Map.GetCellv(sidePoint);
-            foundOffRoad = _CheckOffroadTile(spId);
-        }
-        rightCutoff = new Vector2((rightPoints - 1) * 32, -((rightPoints - 1) * 32));
-        
-        foundOffRoad = false;
+            while (!foundOffRoad && rightPoints < 15)
+            {
+                rightPoints++;
+                var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
+                var spId = Map.GetCellv(sidePoint);
+                foundOffRoad = _CheckOffroadTile(spId);
+            }
+            rightCutoff = new Vector2((rightPoints - 1) * 32, -((rightPoints - 1) * 32));
+            
+            foundOffRoad = false;
 
-        while (!foundOffRoad && leftPoints > -15)
-        {
-            leftPoints--;
-            var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
-            var spId = Map.GetCellv(sidePoint);
-            foundOffRoad = _CheckOffroadTile(spId);
-        }
-        leftCutoff = new Vector2((leftPoints + 1) * 32, (leftPoints + 1) * 32);
+            while (!foundOffRoad && leftPoints > -15)
+            {
+                leftPoints--;
+                var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
+                var spId = Map.GetCellv(sidePoint);
+                foundOffRoad = _CheckOffroadTile(spId);
+            }
+            leftCutoff = new Vector2((leftPoints + 1) * 32, (leftPoints + 1) * 32);
 
-        foundOffRoad = false;
+            foundOffRoad = false;
 
-        while (!foundOffRoad && forwardPoints > -15)
-        {
-            forwardPoints--;
-            var forwardPoint = (Map.WorldToMap(GlobalPosition + new Vector2(0, forwardPoints * 32)) / 4);
-            var fpId = Map.GetCellv(forwardPoint);
-            foundOffRoad = _CheckOffroadTile(fpId);
+            while (!foundOffRoad && forwardPoints > -15)
+            {
+                forwardPoints--;
+                var forwardPoint = (Map.WorldToMap(GlobalPosition + new Vector2(0, forwardPoints * 32)) / 4);
+                var fpId = Map.GetCellv(forwardPoint);
+                foundOffRoad = _CheckOffroadTile(fpId);
+            }
+            forwardCutoff = new Vector2(0, (forwardPoints + 1) * 32);
         }
-        forwardCutoff = new Vector2(0, (forwardPoints + 1) * 32);
-        
+
         return new DiagonalData(rightCutoff, leftCutoff, forwardCutoff, rightPoints, Math.Abs(leftPoints), Math.Abs(forwardPoints));
     }
 

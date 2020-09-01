@@ -30,9 +30,7 @@ public class BaseCar : KinematicBody2D
 
     public TileMap Map { get; set; }
     public override void _Ready()
-    {
-        //map = (TileMap)GetParent().GetNode("TileMap");
-    }
+    {}
 
     public virtual void GetControls(float delta)
     {}
@@ -46,13 +44,10 @@ public class BaseCar : KinematicBody2D
 
     protected bool _CheckOffroadTile(int tileID)
     {
-        //for (int i = 0; i < offTrackTiles.Length; i++)
         for (int i = 0; i < onTrackTiles.Length; i++)
         {
-            //if (offTrackTiles[i] == tileID)
             if (onTrackTiles[i] == tileID)
             {
-                //GD.Print("Offtrack tile: " + tileID);
                 return false;
             }
         }
