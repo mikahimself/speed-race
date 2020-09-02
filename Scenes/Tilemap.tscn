@@ -35,6 +35,7 @@ format = 1
 
 [node name="AISpawner" type="Node2D" parent="."]
 script = ExtResource( 4 )
+AICarMaxAmount = 20
 
 [node name="SpawnTimer" type="Timer" parent="AISpawner"]
 autostart = true

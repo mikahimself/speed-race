@@ -9,10 +9,7 @@ public class Tilemap : Node2D
     public TileMap TileMapTrack;
     public TileMap TileMapDecor;
     Camera2D cam;
-    KinematicBody2D PlayerCar;
-    /*KinematicBody2D AICar;
-    KinematicBody2D AICar2;
-    KinematicBody2D AICar3;*/
+    PlayerCar PlayerCar;
     PackedScene CloudScene;
     AISpawner aiSpawner; 
 
@@ -36,7 +33,7 @@ public class Tilemap : Node2D
         pt.Connect("timeout", this, "_OnPlayTimerTimeout");
         SetTiles();
         cam = (Camera2D)GetNode("PlayerCar/Camera2D");
-        PlayerCar = (KinematicBody2D)GetNode("PlayerCar");
+        PlayerCar = (PlayerCar)GetNode("PlayerCar");
         PlayerCar.Set("Map", TileMapTrack);
         PlayerCar.Position = new Vector2(_screenW / 2, _screenH / 2 - 400);
         _mapstartTime = OS.GetTicksMsec();
@@ -59,9 +56,7 @@ public class Tilemap : Node2D
     public void SetupAISpawner()
     {
         aiSpawner = (AISpawner)GetNode("AISpawner");
-        //aiSpawner.Set("Map", TileMapTrack);
-        aiSpawner.Set("playerCar", PlayerCar);
-        aiSpawner.SetMap(TileMapTrack);
+        aiSpawner.SetValues(TileMapTrack, PlayerCar, _screenW, _screenH);
     }
     public void AddTrackPart()
     {

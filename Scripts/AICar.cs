@@ -73,7 +73,7 @@ public class AICar : BaseCar
 
     public override void GetControls(float delta)
     {
-        DiagonalData dd = ScanDiagonals();
+        DiagonalData dd = ScanDiagonals(GlobalPosition);
         switch (_aiDirection)
         {
             case Direction.FORWARD:
@@ -141,9 +141,8 @@ public class AICar : BaseCar
         }
     }
 
-    private DiagonalData ScanDiagonals()
+    public DiagonalData ScanDiagonals(Vector2 scanFromPosition)
     {
-        
         var leftPoints = 0;
         var rightPoints = 0;
         var forwardPoints = 0;
@@ -157,7 +156,7 @@ public class AICar : BaseCar
             while (!foundOffRoad && rightPoints < 15)
             {
                 rightPoints++;
-                var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
+                var sidePoint = (Map.WorldToMap(scanFromPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
                 var spId = Map.GetCellv(sidePoint);
                 foundOffRoad = _CheckOffroadTile(spId);
             }
@@ -168,7 +167,7 @@ public class AICar : BaseCar
             while (!foundOffRoad && leftPoints > -15)
             {
                 leftPoints--;
-                var sidePoint = (Map.WorldToMap(GlobalPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
+                var sidePoint = (Map.WorldToMap(scanFromPosition + new Vector2(leftPoints * 32, leftPoints * 32)) / 4);
                 var spId = Map.GetCellv(sidePoint);
                 foundOffRoad = _CheckOffroadTile(spId);
             }
@@ -179,7 +178,7 @@ public class AICar : BaseCar
             while (!foundOffRoad && forwardPoints > -15)
             {
                 forwardPoints--;
-                var forwardPoint = (Map.WorldToMap(GlobalPosition + new Vector2(0, forwardPoints * 32)) / 4);
+                var forwardPoint = (Map.WorldToMap(scanFromPosition + new Vector2(0, forwardPoints * 32)) / 4);
                 var fpId = Map.GetCellv(forwardPoint);
                 foundOffRoad = _CheckOffroadTile(fpId);
             }
@@ -325,7 +324,7 @@ public class AICar : BaseCar
     {
         if (_aiDirection == Direction.FORWARD)
         {
-            DiagonalData dd = ScanDiagonals();
+            DiagonalData dd = ScanDiagonals(GlobalPosition);
             _randomTurn = true;
             SetTurnDirection(dd);
         }
@@ -339,7 +338,7 @@ public class AICar : BaseCar
     public override void _PhysicsProcess(float delta)
     {
         base._PhysicsProcess(delta);
-        DiagonalData dd = ScanDiagonals();
+        DiagonalData dd = ScanDiagonals(GlobalPosition);
         //DrawDirections(dd);
     }
 }
