@@ -50,7 +50,7 @@ public class PlayerCar : BaseCar
             }
             else if (_speed > 0)
             {
-                _speed -= Deceleration;
+                _speed = 0;
             }
             else
             {

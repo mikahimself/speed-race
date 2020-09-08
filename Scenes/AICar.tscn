@@ -5,17 +5,21 @@
 
 [node name="AICar" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
-MaxSpeed = -450.0
+MaxSpeed = -5.0
 
-[node name="RayCast2DLeft" type="RayCast2D" parent="." index="0"]
+[node name="RayCast2DFront" type="RayCast2D" parent="." index="0"]
 enabled = true
 cast_to = Vector2( -75, 0 )
 
-[node name="RayCast2DRight" type="RayCast2D" parent="." index="1"]
+[node name="RayCast2DLeft" type="RayCast2D" parent="." index="1"]
+enabled = true
+cast_to = Vector2( -75, 0 )
+
+[node name="RayCast2DRight" type="RayCast2D" parent="." index="2"]
 enabled = true
 cast_to = Vector2( 75, 0 )
 
-[node name="Line2Ds" type="Node2D" parent="." index="4"]
+[node name="Line2Ds" type="Node2D" parent="." index="5"]
 
 [node name="LineForward" type="Line2D" parent="Line2Ds" index="0"]
 points = PoolVector2Array( -77.0664, -0.598862 )
@@ -25,12 +29,12 @@ default_color = Color( 0.4, 0.501961, 1, 1 )
 
 [node name="LineRight" type="Line2D" parent="Line2Ds" index="2"]
 
-[node name="TurnTimer" type="Timer" parent="." index="5"]
+[node name="TurnTimer" type="Timer" parent="." index="6"]
 
-[node name="MoveTimer" type="Timer" parent="." index="6"]
+[node name="MoveTimer" type="Timer" parent="." index="7"]
 wait_time = 3.0
 
-[node name="Camera2D" type="Camera2D" parent="." index="7"]
+[node name="Camera2D" type="Camera2D" parent="." index="8"]
 limit_left = 0
 limit_right = 1024
 smoothing_enabled = true

@@ -92,7 +92,8 @@ public class Tilemap : Node2D
 
     public override void _Process(float delta)
     {
-        if (PlayerCar.Position.y - _screenH < CurrentMapHeight * _tileSize)
+        // Should probably take tilesize conversion into account here.
+        if (PlayerCar.Position.y - (_screenH * 10) < CurrentMapHeight * _tileSize)
         {
             AddTrackPart();
         }

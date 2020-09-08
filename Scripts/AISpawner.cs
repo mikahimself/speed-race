@@ -7,6 +7,14 @@ public class AISpawner : Node2D
 {
     [Export]
     public int AICarMaxAmount = 10;
+    [Export]
+    public double AIMinSpeed = -450;
+    [Export]
+    public double AIMaxSpeed = -640;
+    [Export]
+    public double SpawnTimeMin = 1.5;
+    [Export]
+    public double SpawnTimeMax = 2.5;
     PackedScene _aiCarScene;
     List<AICar> _aiCars;
     PlayerCar _playerCar { get; set; }
@@ -15,7 +23,8 @@ public class AISpawner : Node2D
     private Timer _spawnTimer;
     private int _screenW;
     private int _screenH;
-    private int[] _spawnTiles = new int[] { 0, 1, 2, 16, 19 };
+    private Vector2 _previousSpawnPos;
+    private int[] _spawnTiles = new int[] { 0, 1, 2 };
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -55,10 +64,12 @@ public class AISpawner : Node2D
         {
             GD.Print("Add car at " + aiCar.Position);
             _aiCars.Add(aiCar);
-            aiCar.MaxSpeed = (float)GD.RandRange(-375, -649);
+            aiCar.MaxSpeed = (float)GD.RandRange(AIMinSpeed, AIMaxSpeed);
+            aiCar.onTrackTiles = new int[] {0, 1, 2, 16, 19};
             GetParent().AddChild(aiCar);
             _canSpawn = false;
-            _spawnTimer.Start((float)GD.RandRange(1.0, 2.0));
+            _spawnTimer.Start((float)GD.RandRange(SpawnTimeMin, SpawnTimeMax));
+            _previousSpawnPos = aiCar.Position;
         }
     }
 
@@ -75,35 +86,44 @@ public class AISpawner : Node2D
         }
     }
 
-    private Vector2 _GetSpawnLocation(Vector2 playerPosition, AICar aICar)
+    private Vector2 _GetSpawnLocation(Vector2 playerPosition, AICar aiCar)
     {
-        float spawnPosY = (float)GD.RandRange(playerPosition.y -600, playerPosition.y -7500);
-        float spawnPosX = (float)GD.RandRange(0, _screenW);
         int calcCount = 0;
-        AICar.DiagonalData dd = aICar.ScanDiagonals(new Vector2(spawnPosX, spawnPosY));
-
-        while (!Array.Exists(_spawnTiles, element => element == _GetTileType(new Vector2(spawnPosX, spawnPosY))) && 
-                calcCount < 50 && 
-                dd.forwardPoints < 5
-                )
+        Vector2 spawnPos = _CreateSpawnPosition(playerPosition);
+        
+        while (!_ValidateSpawnPosition(spawnPos, aiCar) && calcCount < 128)
         {
-            spawnPosX = (float)GD.RandRange(0, _screenW);
-            dd = aICar.ScanDiagonals(new Vector2(spawnPosX, spawnPosY));
+            spawnPos = _CreateSpawnPosition(playerPosition);
             calcCount++;
         }
 
-        aICar.Position = new Vector2(spawnPosX, spawnPosY);
-       
-
-        if (calcCount < 50)
+        AICar.DiagonalData dd = aiCar.ScanDiagonals(spawnPos);
+        if (calcCount < 128)
         {
-            GD.Print("Found position: " + new Vector2(spawnPosX, spawnPosY) + " Forward points: " + dd.forwardPoints + " calc: " + calcCount);
-            return new Vector2(spawnPosX, spawnPosY);
+            GD.Print("Found position: " + spawnPos + " Forward points: " + dd.forwardPoints + " calc: " + calcCount);
+            return spawnPos;
         }
         else
         {
             return Vector2.Zero;
         }
+    }
+
+    private bool _ValidateSpawnPosition(Vector2 spawnPos, AICar aiCar)
+    {
+        AICar.DiagonalData dd = aiCar.ScanDiagonals(spawnPos);
+        int tileType = _GetTileType(spawnPos);
+
+        return _spawnTiles.Contains(tileType) && dd.forwardPoints > 10;
+    }
+
+    private Vector2 _CreateSpawnPosition(Vector2 playerPosition)
+    {
+        float factor = _screenW / 32;
+        int spawnPosY = (int)GD.RandRange(playerPosition.y - (_screenH * 3), playerPosition.y - (_screenH * 7));
+        int spawnPosX = (int)(GD.RandRange(0, factor) * factor);
+
+        return new Vector2(spawnPosX, spawnPosY);
     }
 
     private int _GetTileType(Vector2 position)
