@@ -22,7 +22,6 @@ format = 1
 tile_data = PoolIntArray( 2883768, 0, 0 )
 
 [node name="PlayerCar" parent="." instance=ExtResource( 3 )]
-position = Vector2( 0, 0 )
 z_index = 10
 z_as_relative = false
 
@@ -36,7 +35,9 @@ format = 1
 
 [node name="AISpawner" type="Node2D" parent="."]
 script = ExtResource( 4 )
-AICarMaxAmount = 20
+AICarMaxAmount = 10
+AIMinSpeed = -400.0
+AIMaxSpeed = -600.0
 
 [node name="SpawnTimer" type="Timer" parent="AISpawner"]
 autostart = true

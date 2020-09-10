@@ -5,7 +5,6 @@
 
 [node name="AICar" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
-MaxSpeed = -5.0
 
 [node name="RayCast2DFront" type="RayCast2D" parent="." index="0"]
 enabled = true
@@ -32,7 +31,7 @@ default_color = Color( 0.4, 0.501961, 1, 1 )
 [node name="TurnTimer" type="Timer" parent="." index="6"]
 
 [node name="MoveTimer" type="Timer" parent="." index="7"]
-wait_time = 3.0
+wait_time = 4.0
 
 [node name="Camera2D" type="Camera2D" parent="." index="8"]
 limit_left = 0

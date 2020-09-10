@@ -6,15 +6,15 @@ using System.Linq;
 public class AISpawner : Node2D
 {
     [Export]
-    public int AICarMaxAmount = 10;
+    public int AICarMaxAmount = 1;
     [Export]
-    public double AIMinSpeed = -450;
+    public float AIMinSpeed = -460;
     [Export]
-    public double AIMaxSpeed = -640;
+    public float AIMaxSpeed = -460;
     [Export]
-    public double SpawnTimeMin = 1.5;
+    public float SpawnTimeMin = 1.5f;
     [Export]
-    public double SpawnTimeMax = 2.5;
+    public float SpawnTimeMax = 2.5f;
     PackedScene _aiCarScene;
     List<AICar> _aiCars;
     PlayerCar _playerCar { get; set; }
@@ -24,6 +24,7 @@ public class AISpawner : Node2D
     private int _screenW;
     private int _screenH;
     private Vector2 _previousSpawnPos;
+    RandomNumberGenerator rng;
     private int[] _spawnTiles = new int[] { 0, 1, 2 };
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -31,13 +32,15 @@ public class AISpawner : Node2D
         _spawnTimer = (Timer)GetNode("SpawnTimer");
         _aiCarScene = (PackedScene)ResourceLoader.Load("res://Scenes/AICar.tscn");
         _aiCars= new List<AICar>();
+        rng = new RandomNumberGenerator();
+        rng.Randomize();
     }
 
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
         _CheckAICars();
-        if (_trackTileMap != null && _canSpawn || _aiCars.Count < 5)
+        if (_trackTileMap != null && _canSpawn || _aiCars.Count < AICarMaxAmount / 2)
         {
             _SpawnAICars();
         }
@@ -55,7 +58,7 @@ public class AISpawner : Node2D
         AICar aiCar = (AICar)_aiCarScene.Instance();
         aiCar.Set("Map", _trackTileMap);
         aiCar.Position = _GetSpawnLocation(_playerCar.Position, aiCar);
-
+        //aiCar.Position = new Vector2(_screenW / 2, _playerCar.Position.y -200);
         if (aiCar.Position == Vector2.Zero)
         {
             return;
@@ -64,11 +67,11 @@ public class AISpawner : Node2D
         {
             GD.Print("Add car at " + aiCar.Position);
             _aiCars.Add(aiCar);
-            aiCar.MaxSpeed = (float)GD.RandRange(AIMinSpeed, AIMaxSpeed);
-            aiCar.onTrackTiles = new int[] {0, 1, 2, 16, 19};
+            aiCar.MaxSpeed = rng.RandfRange(AIMinSpeed, AIMaxSpeed);
+            aiCar.onTrackTiles = new int[] {0, 1, 2, 16, 19, 35, 36, 37, 38, 40, 41, 42, 43, 45, 48, 49, 51, 52, 54, 55};
             GetParent().AddChild(aiCar);
             _canSpawn = false;
-            _spawnTimer.Start((float)GD.RandRange(SpawnTimeMin, SpawnTimeMax));
+            _spawnTimer.Start(rng.RandfRange(SpawnTimeMin, SpawnTimeMax));
             _previousSpawnPos = aiCar.Position;
         }
     }
@@ -120,8 +123,8 @@ public class AISpawner : Node2D
     private Vector2 _CreateSpawnPosition(Vector2 playerPosition)
     {
         float factor = _screenW / 32;
-        int spawnPosY = (int)GD.RandRange(playerPosition.y - (_screenH * 3), playerPosition.y - (_screenH * 7));
-        int spawnPosX = (int)(GD.RandRange(0, factor) * factor);
+        float spawnPosY = rng.RandfRange(playerPosition.y - (_screenH), playerPosition.y - (_screenH * 3));
+        float spawnPosX = (rng.RandfRange(0, factor) * factor);
 
         return new Vector2(spawnPosX, spawnPosY);
     }

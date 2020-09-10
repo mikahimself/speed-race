@@ -32,6 +32,7 @@ public class AICar : BaseCar
 
     [Export]
     public Texture CpuTexture;
+    private RandomNumberGenerator _rng;
     
     private Direction _aiDirection = Direction.FORWARD;
     private Line2D _lineForward;
@@ -51,8 +52,9 @@ public class AICar : BaseCar
     public override void _Ready()
     {
         base._Ready();
-        GD.Randomize();
-        onTrackTiles = new int[] {0, 1, 2, };
+        onTrackTiles = new int[] {0, 1, 2, 16, 19, 35, 36, 37, 38, 40, 41, 42, 43, 45, 48, 49, 51, 52, 54, 55};
+        _rng = new RandomNumberGenerator();
+        _rng.Randomize();
 
         // Setup timers
         _moveTimer = (Timer)GetNode("MoveTimer");
@@ -93,6 +95,7 @@ public class AICar : BaseCar
                 SteerForward(dd);
                 break;
         }
+        //DrawDirections(dd);
     }
 
     private void SteerForward(DiagonalData dd)
@@ -104,8 +107,9 @@ public class AICar : BaseCar
             _moveTimer.Start();
         }
        
-        if (dd.forwardPoints <= 8 && dd.rightPoints > 2 && dd.leftPoints > 2)
-        {
+        if (dd.forwardPoints <= 8) // && dd.rightPoints > 2 && dd.leftPoints > 2)
+        {   
+            GD.Print("LOW FORWARD POINTS. GOTTA TURN. " + Name);
             SetTurnDirection(dd);
             return;
         }
@@ -117,21 +121,13 @@ public class AICar : BaseCar
         SetSpeed(dd);
     }
 
-    private void ScanForward(DiagonalData dd)
-    {
-        if (dd.forwardPoints > 5)
-        {
-            _aiDirection = Direction.FORWARD;
-        }
-    }
-
     private void SetSpeed(DiagonalData dd)
     {
-        if (dd.forwardPoints < 6 && _speed < -400)
+        if (dd.forwardPoints < 6 && _speed < MaxSpeed * 0.8f)
         {
             _speed += BrakeDeceleration;
         }
-        else if (dd.forwardPoints <= 10 && _speed < -475)
+        else if (dd.forwardPoints <= 10 && _speed < MaxSpeed * 0.9f)
         {
             _speed += Deceleration;
         }
@@ -139,11 +135,6 @@ public class AICar : BaseCar
         {
             _speed -= Acceleration;
         }
-
-        if (_speed > -200) {
-            _speed = -200;
-        }
-        
 
         if (_aiDirection == Direction.LEFT)
         {
@@ -157,16 +148,20 @@ public class AICar : BaseCar
 
     private void SteerSideways(DiagonalData dd)
     {
-        if (_aiDirection == Direction.LEFT )
+        if (_aiDirection == Direction.LEFT)
         {
-            if (dd.leftPoints <= 3 || (_rayLeft.IsColliding() && dd.forwardPoints > 8)) {
+            if (dd.leftPoints < 4)
+            {
                 _aiDirection = Direction.FORWARD;
+                //GD.Print("Switch from left to forward. Leftpoints: " + dd.leftPoints + " RP: " + dd.rightPoints);
             }
         }
         else if (_aiDirection == Direction.RIGHT)
         {
-            if (dd.rightPoints <= 3 || (_rayRight.IsColliding() && dd.forwardPoints > 8)) {
+            if (dd.rightPoints < 4)
+            {
                 _aiDirection = Direction.FORWARD;
+                //GD.Print("Switch from right to forward. Rightpoints: " + dd.rightPoints + " LP: " + dd.leftPoints);
             }
         }
         SetSpeed(dd);
@@ -187,7 +182,8 @@ public class AICar : BaseCar
             while (!foundOffRoad && rightPoints < 15)
             {
                 rightPoints++;
-                var sidePoint = (Map.WorldToMap(scanFromPosition + new Vector2(rightPoints * 32, -(rightPoints * 32))) / 4);
+                // Subtract 32 from right side to account for tile origin pos.
+                var sidePoint = (Map.WorldToMap(scanFromPosition + new Vector2(rightPoints * 32 - 32, -(rightPoints * 32))) / 4);
                 var spId = Map.GetCellv(sidePoint);
                 foundOffRoad = _CheckOffroadTile(spId);
             }
@@ -232,13 +228,13 @@ public class AICar : BaseCar
 
             switch(limitPoints[i])
             {
-                case 3:
+                case 7: case 6: case 5:
                     _lines[i].DefaultColor = Yellow;
                     break;
-                case 2:
+                case 4: case 3:
                     _lines[i].DefaultColor = Orange;
                     break;
-                case 1:
+                case 2: case 1:
                     _lines[i].DefaultColor = Red;
                     break;
                 default:
@@ -250,78 +246,96 @@ public class AICar : BaseCar
 
     private void SetTurnDirection(DiagonalData dd)
     {
-        if (dd.rightPoints > 3 && dd.leftPoints > 3 && _randomTurn)
+        if (_randomTurn)
         {
-            if (dd.leftPoints > dd.rightPoints + 5)
-            {
-                _aiDirection = Direction.LEFT;
-            }
-            else if (dd.rightPoints > dd.leftPoints + 5)
-            {
-                _aiDirection = Direction.RIGHT;
-            }
-
-            int turnDirRandomizer = (int)GD.RandRange(0, 11);
-            if (turnDirRandomizer < 5)
-            {
-                _aiDirection = Direction.RIGHT;
-                //GD.Print("felt like turning right");
-            }
-            else if (turnDirRandomizer < 10)
-            {
-                _aiDirection = Direction.LEFT;
-                //GD.Print("felt like turning left");
-            }
-            else
-            {
-                _aiDirection = Direction.FORWARD;
-            }
-
-            _randomTurn = false;
-            _turnTimer.Start((float)GD.RandRange(0.5, 2.25));
-                
+            _aiDirection = _GetRandomTurnDirection(dd);
+            return;
         }
-        else if (dd.leftPoints >= dd.rightPoints)
+        
+        //GD.Print("LeftPoints: " + dd.leftPoints + " RightPoints: " + dd.rightPoints);
+
+        if (dd.leftPoints > dd.rightPoints || dd.rightPoints <= 2)
         {
-            
-            if (dd.rightPoints + 5 < dd.leftPoints)
+            _aiDirection = Direction.LEFT;
+            /*if (dd.rightPoints + 5 < dd.leftPoints)
             {
                 _aiDirection = Direction.LEFT;
-                _turnTimer.Start((float)GD.RandRange(1.0, 2.25));
+                //_turnTimer.Start((float)GD.RandRange(1.0, 2.25));
                 //GD.Print("Much more space on left " + dd);
             }
             else if (dd.rightPoints <= 2 && dd.leftPoints - dd.rightPoints > 1)
             {
                 _aiDirection = Direction.LEFT;
-                _turnTimer.Start((float)GD.RandRange(1.0, 2.25));
+                //_turnTimer.Start((float)GD.RandRange(1.0, 2.25));
                 //GD.Print("Low Points - Go Left " + dd);
-            }
+            }*/
             
         }
         
-        else if (dd.rightPoints >= dd.leftPoints)
+        else if (dd.rightPoints > dd.leftPoints || dd.leftPoints <= 2)
         {
-            if (dd.leftPoints + 5 < dd.rightPoints)
+            _aiDirection = Direction.RIGHT;
+            /*if (dd.leftPoints + 5 < dd.rightPoints)
             {
                 _aiDirection = Direction.RIGHT;
-                _turnTimer.Start((float)GD.RandRange(1.0, 2.25));
+                //_turnTimer.Start((float)GD.RandRange(1.0, 2.25));
                 //GD.Print("Much more space on right " + dd);
             }
             else if (dd.leftPoints <= 2 && dd.rightPoints - dd.leftPoints > 1)
             {
                 _aiDirection = Direction.RIGHT;
-                _turnTimer.Start((float)GD.RandRange(1.0, 2.25));
+                //_turnTimer.Start((float)GD.RandRange(1.0, 2.25));
                 //GD.Print("GO Right: " + dd);
-            }
+            }*/
             
         }
+        //GD.Print("DIR NOW: " + _aiDirection);
+    }
+
+    private Direction _GetRandomTurnDirection(DiagonalData dd)
+    {
+        Direction randomDir = Direction.FORWARD;
+        int randomizer = _rng.RandiRange(0, 12);
+
+        // If tight on sides, continue forward.
+        if (dd.rightPoints < 3 && dd.leftPoints < 3)
+        {
+            randomDir = Direction.FORWARD;
+        }
+        else if (dd.rightPoints <= 3 && dd.leftPoints > 3)
+        {
+            randomDir = Direction.LEFT;
+        }
+        else if (dd.leftPoints <= 3 && dd.rightPoints > 3)
+        {
+            randomDir = Direction.RIGHT;
+        }
+        // If enough space on both sides, get random direction (that may also be forward)
+        else if (dd.rightPoints > 3 && dd.leftPoints > 3)
+        {
+            if (randomizer < 5)
+            {
+                randomDir = Direction.RIGHT;
+            }
+            else if (randomizer < 10)
+            {
+                randomDir = Direction.LEFT;
+            }
+
+            _randomTurn = false;
+            _turnTimer.Start((float)GD.RandRange(1.5, 2.5));
+        }
+
+        return randomDir;
     }
 
     public void _onMoveTimerTimeout()
     {
+        //GD.Print("Movetimer fired. Direction is " + _aiDirection);
         if (_aiDirection == Direction.FORWARD)
         {
             DiagonalData dd = ScanDiagonals(GlobalPosition);
+            //GD.Print("Speed: " + _speed + " MaxSpeed: " + MaxSpeed + " FP: " + dd.forwardPoints + " RP: " + dd.rightPoints + " LP: " + dd.leftPoints + " DIR: " + _aiDirection);
             _randomTurn = true;
             SetTurnDirection(dd);
         }
@@ -335,13 +349,5 @@ public class AICar : BaseCar
     public override void _PhysicsProcess(float delta)
     {
         base._PhysicsProcess(delta);
-        DiagonalData dd = ScanDiagonals(GlobalPosition);
-        //DrawDirections(dd);
-        if (_speed > -100)
-        {
-            GD.Print("**************");
-            GD.Print("Speed: " + _speed + " FP: " + dd.forwardPoints + " RP: " + dd.rightPoints + " LP: " + dd.leftPoints + " DIR: " + _aiDirection);
-            GD.Print("POS: " + GlobalPosition);
-        }
     }
 }
