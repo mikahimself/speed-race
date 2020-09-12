@@ -11,7 +11,7 @@ public class Tilemap : Node2D
     Camera2D cam;
     PlayerCar PlayerCar;
     AISpawner aiSpawner;
-    //CloudSpawner cloudSpawner;
+    CloudSpawner cloudSpawner;
 
     public int CurrentMapHeight = 0;
 
@@ -37,7 +37,8 @@ public class Tilemap : Node2D
         PlayerCar.Set("Map", TileMapTrack);
         PlayerCar.Position = new Vector2(_screenW / 2, -2000);// _screenH / 2 - 400);
         _mapstartTime = OS.GetTicksMsec();
-        //cloudSpawner.SetupSpawner(_screenW);
+        cloudSpawner = (CloudSpawner)GetNode("CloudSpawner");
+        cloudSpawner.SetupSpawner(_screenW, _screenH);
         SetupAISpawner();
     }
 
