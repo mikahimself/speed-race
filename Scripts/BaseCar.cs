@@ -11,7 +11,7 @@ public class BaseCar : KinematicBody2D
     public float BrakeDeceleration = 15.0f;
     public float SideSpeed = 4.0f;
     public float MaxSideSpeed = 175f;
-    protected float _speed = 0.0f;
+    public float Speed = 0.0f;
     
     protected Vector2 _velocity;
     protected int[] offTrackTiles = {
@@ -38,7 +38,7 @@ public class BaseCar : KinematicBody2D
     public override void _PhysicsProcess(float delta)
     {
         GetControls(delta);
-        _velocity = new Vector2(SideSpeed, _speed);
+        _velocity = new Vector2(SideSpeed, Speed);
         MoveAndSlide(_velocity);
     }
 

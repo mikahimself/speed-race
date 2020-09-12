@@ -57,18 +57,19 @@ public class AISpawner : Node2D
     {
         AICar aiCar = (AICar)_aiCarScene.Instance();
         aiCar.Set("Map", _trackTileMap);
+        aiCar.Set("Rng", rng);
         aiCar.Position = _GetSpawnLocation(_playerCar.Position, aiCar);
-        //aiCar.Position = new Vector2(_screenW / 2, _playerCar.Position.y -200);
+
         if (aiCar.Position == Vector2.Zero)
         {
+            aiCar.CallDeferred("QueueFree");
             return;
         }
         else 
         {
-            GD.Print("Add car at " + aiCar.Position);
             _aiCars.Add(aiCar);
             aiCar.MaxSpeed = rng.RandfRange(AIMinSpeed, AIMaxSpeed);
-            aiCar.onTrackTiles = new int[] {0, 1, 2, 16, 19, 35, 36, 37, 38, 40, 41, 42, 43, 45, 48, 49, 51, 52, 54, 55};
+            aiCar.Speed = rng.RandfRange(AIMinSpeed, aiCar.MaxSpeed);
             GetParent().AddChild(aiCar);
             _canSpawn = false;
             _spawnTimer.Start(rng.RandfRange(SpawnTimeMin, SpawnTimeMax));
@@ -80,7 +81,7 @@ public class AISpawner : Node2D
     {
         foreach (AICar aiCar in _aiCars.ToList())
         {
-            if (aiCar.Position.y - 500 > _playerCar.Position.y)
+            if (aiCar.Position.y - 1500 > _playerCar.Position.y || aiCar.Position.y < _playerCar.Position.y - 2500)
             {
                 GD.Print("Removed car. Cars on track: " + _aiCars.Count);
                 _aiCars.Remove(aiCar);
@@ -100,16 +101,13 @@ public class AISpawner : Node2D
             calcCount++;
         }
 
-        AICar.DiagonalData dd = aiCar.ScanDiagonals(spawnPos);
         if (calcCount < 128)
         {
-            GD.Print("Found position: " + spawnPos + " Forward points: " + dd.forwardPoints + " calc: " + calcCount);
+            GD.Print("Created car at: " + spawnPos);
             return spawnPos;
         }
-        else
-        {
-            return Vector2.Zero;
-        }
+
+        return Vector2.Zero;
     }
 
     private bool _ValidateSpawnPosition(Vector2 spawnPos, AICar aiCar)
@@ -117,13 +115,20 @@ public class AISpawner : Node2D
         AICar.DiagonalData dd = aiCar.ScanDiagonals(spawnPos);
         int tileType = _GetTileType(spawnPos);
 
-        return _spawnTiles.Contains(tileType) && dd.forwardPoints > 10;
+        return _spawnTiles.Contains(tileType) && dd.forwardPoints >= 20;
     }
 
     private Vector2 _CreateSpawnPosition(Vector2 playerPosition)
     {
         float factor = _screenW / 32;
-        float spawnPosY = rng.RandfRange(playerPosition.y - (_screenH), playerPosition.y - (_screenH * 3));
+        float screenTop = _playerCar.GetViewportTransform().AffineInverse().origin.y;
+
+        float spawnPosY = rng.RandfRange(playerPosition.y + (_screenH * 2), screenTop - (_screenH * 2));
+        while (spawnPosY >= screenTop - 250 && spawnPosY <= playerPosition.y + 250)
+        {
+            spawnPosY = rng.RandfRange(playerPosition.y - (_screenH), playerPosition.y - (_screenH * 2));
+        }
+        
         float spawnPosX = (rng.RandfRange(0, factor) * factor);
 
         return new Vector2(spawnPosX, spawnPosY);

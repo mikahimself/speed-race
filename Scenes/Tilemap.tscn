@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Tilemap/TrackTilemap.tres" type="TileSet" id=1]
 [ext_resource path="res://Scripts/Tilemap.cs" type="Script" id=2]
 [ext_resource path="res://Scenes/PlayerCar.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scripts/AISpawner.cs" type="Script" id=4]
+[ext_resource path="res://Scenes/Decoration/CloudSpawner.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Tilemap/TileMapDecorations.tres" type="TileSet" id=6]
 
 [node name="Node2D" type="Node2D"]
@@ -41,4 +42,6 @@ AIMaxSpeed = -600.0
 
 [node name="SpawnTimer" type="Timer" parent="AISpawner"]
 autostart = true
+
+[node name="CloudSpawner" parent="." instance=ExtResource( 5 )]
 [connection signal="timeout" from="AISpawner/SpawnTimer" to="AISpawner" method="_onSpawnTimer_Timeout"]

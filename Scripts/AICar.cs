@@ -32,7 +32,7 @@ public class AICar : BaseCar
 
     [Export]
     public Texture CpuTexture;
-    private RandomNumberGenerator _rng;
+    public RandomNumberGenerator Rng { get; set; }
     
     private Direction _aiDirection = Direction.FORWARD;
     private Line2D _lineForward;
@@ -53,15 +53,30 @@ public class AICar : BaseCar
     {
         base._Ready();
         onTrackTiles = new int[] {0, 1, 2, 16, 19, 35, 36, 37, 38, 40, 41, 42, 43, 45, 48, 49, 51, 52, 54, 55};
-        _rng = new RandomNumberGenerator();
-        _rng.Randomize();
+        //_rng = new RandomNumberGenerator();
+        //_rng.Randomize();
 
-        // Setup timers
+        _SetupTimers();
+        _SetupRays();
+
+        
+        if (CpuTexture != null)
+        {
+            Sprite car = (Sprite)GetNode("CarSprite");
+            car.Texture = CpuTexture;
+        }
+    }
+
+    private void _SetupTimers()
+    {
         _moveTimer = (Timer)GetNode("MoveTimer");
         _turnTimer = (Timer)GetNode("TurnTimer");
         _moveTimer.Connect("timeout", this, "_onMoveTimerTimeout");
         _turnTimer.Connect("timeout", this, "_onTurnTimerTimeout");
+    }
 
+    private void _SetupRays()
+    {
         _lineForward = (Line2D)GetNode("Line2Ds/LineForward");
         _lineRight = (Line2D)GetNode("Line2Ds/LineRight");
         _lineLeft = (Line2D)GetNode("Line2Ds/LineLeft");
@@ -69,11 +84,11 @@ public class AICar : BaseCar
         
         _rayLeft = (RayCast2D)GetNode("RayCast2DLeft");
         _rayRight = (RayCast2D)GetNode("RayCast2DRight");
-        if (CpuTexture != null)
-        {
-            Sprite car = (Sprite)GetNode("CarSprite");
-            car.Texture = CpuTexture;
-        }
+    }
+
+    public void SpawnSetup()
+    {
+        
     }
 
     public override void GetControls(float delta)
@@ -109,7 +124,7 @@ public class AICar : BaseCar
        
         if (dd.forwardPoints <= 8) // && dd.rightPoints > 2 && dd.leftPoints > 2)
         {   
-            GD.Print("LOW FORWARD POINTS. GOTTA TURN. " + Name);
+            //GD.Print("LOW FORWARD POINTS. GOTTA TURN. " + Name);
             SetTurnDirection(dd);
             return;
         }
@@ -123,17 +138,17 @@ public class AICar : BaseCar
 
     private void SetSpeed(DiagonalData dd)
     {
-        if (dd.forwardPoints < 6 && _speed < MaxSpeed * 0.8f)
+        if (dd.forwardPoints < 6 && Speed < MaxSpeed * 0.8f)
         {
-            _speed += BrakeDeceleration;
+            Speed += BrakeDeceleration;
         }
-        else if (dd.forwardPoints <= 10 && _speed < MaxSpeed * 0.9f)
+        else if (dd.forwardPoints <= 10 && Speed < MaxSpeed * 0.9f)
         {
-            _speed += Deceleration;
+            Speed += Deceleration;
         }
-        else if (_speed > MaxSpeed) 
+        else if (Speed > MaxSpeed) 
         {
-            _speed -= Acceleration;
+            Speed -= Acceleration;
         }
 
         if (_aiDirection == Direction.LEFT)
@@ -202,7 +217,7 @@ public class AICar : BaseCar
 
             foundOffRoad = false;
 
-            while (!foundOffRoad && forwardPoints > -15)
+            while (!foundOffRoad && forwardPoints > -20)
             {
                 forwardPoints--;
                 var forwardPoint = (Map.WorldToMap(scanFromPosition + new Vector2(0, forwardPoints * 32)) / 4);
@@ -295,7 +310,7 @@ public class AICar : BaseCar
     private Direction _GetRandomTurnDirection(DiagonalData dd)
     {
         Direction randomDir = Direction.FORWARD;
-        int randomizer = _rng.RandiRange(0, 12);
+        int randomizer = Rng.RandiRange(0, 12);
 
         // If tight on sides, continue forward.
         if (dd.rightPoints < 3 && dd.leftPoints < 3)

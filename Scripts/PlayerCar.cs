@@ -9,13 +9,13 @@ public class PlayerCar : BaseCar
         SideSpeed = 0;
         if (Input.IsActionPressed("ui_up"))
         {
-            _speed -= Acceleration;
-            if (_speed < MaxSpeed)
+            Speed -= Acceleration;
+            if (Speed < MaxSpeed)
             {
-                _speed = MaxSpeed;
+                Speed = MaxSpeed;
             }
         }
-        var speedFromMax = (_speed / MaxSpeed) * 2 < 0.5f ? (_speed / MaxSpeed) * 2 : _speed / MaxSpeed;
+        var speedFromMax = (Speed / MaxSpeed) * 2 < 0.5f ? (Speed / MaxSpeed) * 2 : Speed / MaxSpeed;
 
         if (Input.IsActionPressed("ui_left"))
         {
@@ -30,31 +30,31 @@ public class PlayerCar : BaseCar
         if (_CheckOffroadTile(mapid))
         {
             SideSpeed = SideSpeed / 2;
-            _speed = _speed * 0.975f;
+            Speed = Speed * 0.975f;
         }
 
         if (Input.IsActionPressed("ui_down"))
         {
-            _speed += BrakeDeceleration;
-            if (_speed >= 0)
+            Speed += BrakeDeceleration;
+            if (Speed >= 0)
             {
-                _speed = 0;
+                Speed = 0;
             }
         }
 
         if (!Input.IsActionPressed("ui_down") && !Input.IsActionPressed("ui_up"))
         {
-            if (_speed < 0)
+            if (Speed < 0)
             {
-                _speed += Deceleration;
+                Speed += Deceleration;
             }
-            else if (_speed > 0)
+            else if (Speed > 0)
             {
-                _speed = 0;
+                Speed = 0;
             }
             else
             {
-                _speed = 0;
+                Speed = 0;
             }
         }
     }

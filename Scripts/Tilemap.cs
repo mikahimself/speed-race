@@ -10,8 +10,8 @@ public class Tilemap : Node2D
     public TileMap TileMapDecor;
     Camera2D cam;
     PlayerCar PlayerCar;
-    PackedScene CloudScene;
-    AISpawner aiSpawner; 
+    AISpawner aiSpawner;
+    //CloudSpawner cloudSpawner;
 
     public int CurrentMapHeight = 0;
 
@@ -35,13 +35,9 @@ public class Tilemap : Node2D
         cam = (Camera2D)GetNode("PlayerCar/Camera2D");
         PlayerCar = (PlayerCar)GetNode("PlayerCar");
         PlayerCar.Set("Map", TileMapTrack);
-        PlayerCar.Position = new Vector2(_screenW / 2, _screenH / 2 - 400);
+        PlayerCar.Position = new Vector2(_screenW / 2, -2000);// _screenH / 2 - 400);
         _mapstartTime = OS.GetTicksMsec();
-
-        CloudScene = (PackedScene)ResourceLoader.Load("res://Scenes/Decoration/Cloud.tscn");
-        Cloud cloudSprite = (Cloud)CloudScene.Instance();
-        cloudSprite.SetCloudPosition(0, 1000, PlayerCar.Position.y - 600);
-        AddChild(cloudSprite);
+        //cloudSpawner.SetupSpawner(_screenW);
         SetupAISpawner();
     }
 
@@ -51,6 +47,7 @@ public class Tilemap : Node2D
         {
             SetTrackParts(TileMapParts.track[i]);
         }
+        GD.Print( CurrentMapHeight * _tileSize);
     }
 
     public void SetupAISpawner()

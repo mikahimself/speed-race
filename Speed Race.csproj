@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenes\Decoration\CloudSpawner.cs" />
     <Compile Include="Scripts\AICar.cs" />
     <Compile Include="Scripts\AISpawner.cs" />
     <Compile Include="Scripts\BaseCar.cs" />

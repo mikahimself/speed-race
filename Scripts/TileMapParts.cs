@@ -310,6 +310,6 @@ public class TileMapParts : TileMap
     */
 
     public static List<int> track = new List<int> {
-      0, 0, 0, 0, 0, 4, 1, 1, 15
+      1, 1, 1, 1, 1, 1, 1, 1, 1//0, 0, 0, 0, 4, 1, 1, 15
     };
 }
