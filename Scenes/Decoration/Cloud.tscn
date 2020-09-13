@@ -7,4 +7,5 @@
 scale = Vector2( 3, 3 )
 z_index = 3000
 texture = ExtResource( 1 )
+hframes = 4
 script = ExtResource( 2 )

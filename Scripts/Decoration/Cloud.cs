@@ -31,6 +31,11 @@ public class Cloud : Sprite
         MoveSpeed = rng.RandfRange(CloudSpeedMin, CloudSpeedMax);
     }
 
+    public void SetCloudFrame(RandomNumberGenerator rng)
+    {
+        Frame = rng.RandiRange(0, 1);
+    }
+
     public override void _Process(float delta)
     {
         Position += new Vector2(0, MoveSpeed);

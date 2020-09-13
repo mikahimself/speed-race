@@ -38,6 +38,7 @@ public class CloudSpawner : Node2D
             Cloud cloud = (Cloud)_cloudScene.Instance();
             cloud.SetCloudPosition(-xOffset, _screenWidth + xOffset, GetViewportTransform().AffineInverse().origin.y, rng);
             cloud.SetScaleAndSpeed(rng);
+            cloud.SetCloudFrame(rng);
             GetParent().AddChild(cloud);
             _clouds.Add(cloud);
         }

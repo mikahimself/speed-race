@@ -48,23 +48,15 @@ public class AICar : BaseCar
     private Timer _turnTimer;
     private RayCast2D _rayLeft;
     private RayCast2D _rayRight;
+    private Sprite _carSprite;
 
     public override void _Ready()
     {
         base._Ready();
         onTrackTiles = new int[] {0, 1, 2, 16, 19, 35, 36, 37, 38, 40, 41, 42, 43, 45, 48, 49, 51, 52, 54, 55};
-        //_rng = new RandomNumberGenerator();
-        //_rng.Randomize();
-
         _SetupTimers();
         _SetupRays();
-
-        
-        if (CpuTexture != null)
-        {
-            Sprite car = (Sprite)GetNode("CarSprite");
-            car.Texture = CpuTexture;
-        }
+        _SetupSprite();
     }
 
     private void _SetupTimers()
@@ -84,6 +76,12 @@ public class AICar : BaseCar
         
         _rayLeft = (RayCast2D)GetNode("RayCast2DLeft");
         _rayRight = (RayCast2D)GetNode("RayCast2DRight");
+    }
+
+    private void _SetupSprite()
+    {
+        Sprite car = (Sprite)GetNode("CarSprite");
+        car.Frame = Rng.RandiRange(0, 1);
     }
 
     public void SpawnSetup()
