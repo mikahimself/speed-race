@@ -14,17 +14,20 @@ public class CloudSpawner : Node2D
     private int _screenHeight;
     List<Cloud> _clouds = new List<Cloud>();
     RandomNumberGenerator rng = new RandomNumberGenerator();
+    PlayerCar _playerCar;
+    int xOffset = 200;
+    int yDespawnOffset = 300;
 
-    // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         _cloudScene = (PackedScene)ResourceLoader.Load("res://Scenes/Decoration/Cloud.tscn");
     }
 
-    public void SetupSpawner(int screenWidth, int screenHeight)
+    public void SetupSpawner(int screenWidth, int screenHeight, PlayerCar playerCar)
     {
         _screenWidth = screenWidth;
         _screenHeight = screenHeight;
+        _playerCar = playerCar;
     }
 
 
@@ -33,14 +36,13 @@ public class CloudSpawner : Node2D
         if (_clouds.Count < MaxClouds)
         {
             Cloud cloud = (Cloud)_cloudScene.Instance();
-            cloud.SetCloudPosition(0, _screenWidth, GetViewportTransform().AffineInverse().origin.y, rng);
+            cloud.SetCloudPosition(-xOffset, _screenWidth + xOffset, GetViewportTransform().AffineInverse().origin.y, rng);
             cloud.SetScaleAndSpeed(rng);
             GetParent().AddChild(cloud);
             _clouds.Add(cloud);
         }
     }
 
-//  // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
         if (_clouds.Count < MaxClouds)
@@ -54,9 +56,8 @@ public class CloudSpawner : Node2D
     {
         foreach (Cloud cloud in _clouds.ToList())
         {
-            if (cloud.Position.y > cloud.StartPosition.y + _screenHeight)
+            if (cloud.Position.y > _playerCar.Position.y + yDespawnOffset)
             {
-                GD.Print("Removed cloud. Clouds on track: " + _clouds.Count);
                 _clouds.Remove(cloud);
                 cloud.CallDeferred("QueueFree");
             }

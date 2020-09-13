@@ -38,7 +38,7 @@ public class Tilemap : Node2D
         PlayerCar.Position = new Vector2(_screenW / 2, -2000);// _screenH / 2 - 400);
         _mapstartTime = OS.GetTicksMsec();
         cloudSpawner = (CloudSpawner)GetNode("CloudSpawner");
-        cloudSpawner.SetupSpawner(_screenW, _screenH);
+        cloudSpawner.SetupSpawner(_screenW, _screenH, PlayerCar);
         SetupAISpawner();
     }
 
