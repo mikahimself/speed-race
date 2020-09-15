@@ -81,7 +81,7 @@ public class AISpawner : Node2D
     {
         foreach (AICar aiCar in _aiCars.ToList())
         {
-            if (aiCar.Position.y - 1500 > _playerCar.Position.y || aiCar.Position.y < _playerCar.Position.y - 2500)
+            if (aiCar.Position.y - 1500 > _playerCar.Position.y || aiCar.Position.y < _playerCar.Position.y - 3500)
             {
                 GD.Print("Removed car. Cars on track: " + _aiCars.Count);
                 _aiCars.Remove(aiCar);

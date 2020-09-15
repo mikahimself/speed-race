@@ -48,6 +48,7 @@ public class AICar : BaseCar
     private Timer _turnTimer;
     private RayCast2D _rayLeft;
     private RayCast2D _rayRight;
+    private RayCast2D _rayFront;
     private Sprite _carSprite;
 
     public override void _Ready()
@@ -76,6 +77,7 @@ public class AICar : BaseCar
         
         _rayLeft = (RayCast2D)GetNode("RayCast2DLeft");
         _rayRight = (RayCast2D)GetNode("RayCast2DRight");
+        _rayFront = (RayCast2D)GetNode("RayCast2DFront");
     }
 
     private void _SetupSprite()
@@ -120,9 +122,8 @@ public class AICar : BaseCar
             _moveTimer.Start();
         }
        
-        if (dd.forwardPoints <= 8) // && dd.rightPoints > 2 && dd.leftPoints > 2)
+        if (dd.forwardPoints <= 8 || _rayFront.IsColliding())
         {   
-            //GD.Print("LOW FORWARD POINTS. GOTTA TURN. " + Name);
             SetTurnDirection(dd);
             return;
         }
@@ -136,11 +137,11 @@ public class AICar : BaseCar
 
     private void SetSpeed(DiagonalData dd)
     {
-        if (dd.forwardPoints < 6 && Speed < MaxSpeed * 0.8f)
+        if ((dd.forwardPoints < 6 || _rayFront.IsColliding()) && Speed < MaxSpeed * 0.5f)
         {
             Speed += BrakeDeceleration;
         }
-        else if (dd.forwardPoints <= 10 && Speed < MaxSpeed * 0.9f)
+        else if (dd.forwardPoints <= 10 && Speed < MaxSpeed * 0.8f)
         {
             Speed += Deceleration;
         }
