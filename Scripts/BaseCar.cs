@@ -12,6 +12,8 @@ public class BaseCar : KinematicBody2D
     public float SideSpeed = 4.0f;
     public float MaxSideSpeed = 175f;
     public float Speed = 0.0f;
+    [Signal]
+    public delegate void HitTree(BaseCar car);
     
     protected Vector2 _velocity;
     protected int[] offTrackTiles = {
@@ -39,7 +41,18 @@ public class BaseCar : KinematicBody2D
     {
         GetControls(delta);
         _velocity = new Vector2(SideSpeed, Speed);
-        MoveAndSlide(_velocity);
+        //MoveAndSlide(_velocity);
+        KinematicCollision2D collision = MoveAndCollide(_velocity * delta);
+        if (collision != null)
+        {
+            _velocity = _velocity.Slide(collision.Normal);
+            Node2D coll = (Node2D)collision.Collider;
+
+            if (coll.Name == "TileMapDecoration")
+            {
+                EmitSignal(nameof(HitTree), this);
+            }
+        }
     }
 
     protected bool _CheckOffroadTile(int tileID)

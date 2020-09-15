@@ -59,6 +59,7 @@ public class AISpawner : Node2D
         aiCar.Set("Map", _trackTileMap);
         aiCar.Set("Rng", rng);
         aiCar.Position = _GetSpawnLocation(_playerCar.Position, aiCar);
+        aiCar.Connect("HitTree", this, nameof(_OnAICarHitTree));
 
         if (aiCar.Position == Vector2.Zero)
         {
@@ -83,11 +84,17 @@ public class AISpawner : Node2D
         {
             if (aiCar.Position.y - 1500 > _playerCar.Position.y || aiCar.Position.y < _playerCar.Position.y - 3500)
             {
+                _RemoveAICar(aiCar);
                 GD.Print("Removed car. Cars on track: " + _aiCars.Count);
-                _aiCars.Remove(aiCar);
-                aiCar.CallDeferred("QueueFree");
+                
             }
         }
+    }
+
+    private void _RemoveAICar(AICar aiCar)
+    {
+        _aiCars.Remove(aiCar);
+        aiCar.CallDeferred("QueueFree");
     }
 
     private Vector2 _GetSpawnLocation(Vector2 playerPosition, AICar aiCar)
@@ -147,5 +154,13 @@ public class AISpawner : Node2D
             _canSpawn = true;
         }
         GD.Print("Cars on track: " + _aiCars.Count);
+    }
+
+    public void _OnAICarHitTree(AICar aiCar)
+    {
+        GD.Print("Cars on track before hit: " + _aiCars.Count);
+        _RemoveAICar(aiCar);
+        GD.Print("Cars on track after hit: " + _aiCars.Count);
+
     }
 }

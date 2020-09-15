@@ -4,6 +4,17 @@ using System;
 public class PlayerCar : BaseCar
 {
 
+     public override void _Ready()
+    {
+        base._Ready();
+        this.Connect("HitTree", this, nameof(_OnHitTree));
+    }
+
+    private void _OnHitTree(PlayerCar car)
+    {
+        GD.Print("I hit a tree.");
+    }
+
     public override void GetControls(float delta)
     {
         SideSpeed = 0;

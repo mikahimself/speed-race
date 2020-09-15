@@ -25,8 +25,9 @@ TileMapParts="*res://Scripts/TileMapParts.cs"
 
 [layer_names]
 
-2d_physics/layer_1="Cars"
+2d_physics/layer_1="PlayerCar"
 2d_physics/layer_2="Terrain"
+2d_physics/layer_3="CPUCar"
 
 [logging]
 
